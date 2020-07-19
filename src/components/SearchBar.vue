@@ -1,18 +1,16 @@
 <template>
 <div class="wrapper">
-  <div class="search-bar" @click="search">
+  <routerLink class="search-bar" tag="div" to="/search">
     <span class="search-icon iconfont">&#xe6c7;</span>
     <span class="search">搜索商品</span>
-  </div>
+  </routerLink>
 </div>
 </template>
 
 <script>
 export default {
   methods:{
-    search(){
-      console.log(111)
-    }
+    
   }
 }
 </script>
@@ -20,7 +18,7 @@ export default {
 @import '~@/assets/scss/global';
 .wrapper{
   width:100%;
-  height:.9rem;
+  height:$search-h;
   padding:.15rem .42rem;
   background-color: #f5f5f5;
   position: fixed;
@@ -36,6 +34,7 @@ export default {
   display: flex;
   align-items: center;
   .search-icon{
+    font-size:.3rem;
     color:$color-b;
     margin:0 .2rem;
   }

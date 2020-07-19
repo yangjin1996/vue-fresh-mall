@@ -1,8 +1,8 @@
 <template>
 <div class="recommend-goods">
-  <h2>--推荐商品--</h2>
+  <h2>-- 推荐商品 --</h2>
   <ul class="recommend-list">
-    <li v-for="(item,index) of goodsList" :key="index" class="recommend-cell">
+    <li v-for="(item,index) of goodsList" :key="index" class="recommend-cell" @click="toGoodsDetail(item.id)">
       <img :src="item.img" alt="">
       <div class="goods-info">
         <h3>{{item.name}}</h3>
@@ -12,6 +12,8 @@
       </div>
     </li>
   </ul>
+  <div v-if="goodsList.length && pullingUp" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
+  <div v-else class="loading">已经到底了哦~</div>
 </div>
 </template>
 
@@ -19,9 +21,22 @@
 export default {
   props:{
     goodsList:{
-      type:Array
+      type:Array,
+    },
+    pullingUp:{
+      type:Boolean,
     }
-  }
+  },
+  methods: {
+    toGoodsDetail(goodsId){
+      this.$router.push({
+        path:'/goods-detail',
+        query:{
+          goodsId
+        }
+      })
+    }
+  },
 }
 </script>
 <style lang='scss' scoped>
@@ -29,14 +44,14 @@ export default {
 .recommend-goods{
   margin-bottom: 1rem;
   h2{
-    padding:.1rem 0;
+    padding-top:.2rem;
     font-size: .28rem;
     color:$color-a;
-    font-weight: 600;
     text-align: center;
   }
   .recommend-list{
     margin: .2rem;
+    margin-bottom:0;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -58,8 +73,7 @@ export default {
         h3{
           line-height: .6rem;
           font-size: .28rem;
-          color:$color-b;
-          font-weight: 600;
+          color:#1a1a1a;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -81,6 +95,17 @@ export default {
           color:$color-a;
         }
       }
+    }
+  }
+  .loading{
+    font-size:.2rem;
+    color:#999;
+    line-height:.5rem;
+    padding-bottom:.2rem;
+    text-align:center;
+    img{
+      width:.3rem;
+      height:.3rem;
     }
   }
 }

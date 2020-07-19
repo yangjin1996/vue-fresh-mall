@@ -19,7 +19,7 @@ export default {
   },
   methods:{
     toBack () {
-
+      this.$router.go(-1);
     }
   }
 }
@@ -29,10 +29,11 @@ export default {
 @import '~@/assets/scss/iconfont';
 .header{
   width:100%;
-  height:.8rem;
+  height:$Header-h;
   font-size: .32rem;
   color:$color-b;
   background-color: #fff;
+  border:1px solid #eee;
   font-weight: 550;
   display: flex;
   justify-content: center;
@@ -40,5 +41,9 @@ export default {
   position: fixed;
   top:0;
   z-index: 2;
+  .back{
+    position:absolute;
+    left:.2rem;
+  }
 }
 </style>

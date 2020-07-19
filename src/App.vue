@@ -6,11 +6,6 @@
   </div>
 </template>
 <script>
-document.addEventListener('DOMContentLoaded',() => {
-  const html = document.querySelector('html');
-  const fontSize = window.innerWidth / 7.5;
-  html.style.fontSize = fontSize + 'px';
-})
 
 export default {}
 </script>
@@ -22,6 +17,7 @@ export default {}
 body,html{
   width:100%;
   height:100%;
+  font-family:'PingFangSCB'!important;
 }
 body{
   background-color: #f5f5f5;

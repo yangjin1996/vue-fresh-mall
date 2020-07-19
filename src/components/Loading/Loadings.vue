@@ -11,7 +11,9 @@ export default {
       type:Boolean,
       default:true
     }
-  }
+  },
+  mounted() {
+  },
 }
 </script>
 <style lang='scss' scoped>

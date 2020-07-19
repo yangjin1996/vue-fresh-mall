@@ -1,6 +1,6 @@
 <template>
-<swiper v-if="swiperList.length > 0" :options="swiperOptions" class="swiper-list">
-  <swiper-slide v-for="(item,keys) of swiperList" :key="keys" class="swiper-cell">
+<swiper v-if="goodsSwiperList.length > 0" :options="swiperOptions" class="swiper-list">
+  <swiper-slide v-for="(item,keys) of goodsSwiperList" :key="keys" class="swiper-cell">
     <img :src="item.img" class="swiper-img">
   </swiper-slide>
   <div class="swiper-pagination" slot="pagination"></div>
@@ -12,7 +12,7 @@ import { swiper,swiperSlide } from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.css'
 export default {
   props:{
-    swiperList:{
+    goodsSwiperList:{
       type:Array
     }
   },
@@ -24,10 +24,10 @@ export default {
     return {
       swiperOptions: {
         pagination : {
-          el:'.swiper-pagination'
+          el:'.swiper-pagination',
+          type:'fraction'
         },
         loop: true,
-        autoplay:true
       },
     }
   }
@@ -35,16 +35,24 @@ export default {
 </script>
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
+/deep/.swiper-pagination{
+  color:rgba(0,0,0,0.5);
+}
+/deep/.swiper-pagination-current{
+  color:rgba(0,0,0,0.7);
+}
+/deep/.swiper-pagination-total{
+  color:rgba(0,0,0,0.5);
+}
 .swiper-list{
-  margin:0 .2rem;
-  border-radius: .1rem;
+  padding-top:.8rem;
+  box-sizing:border-box;
   .swiper-cell{
-    width:100%;
-    height:3rem;
+    width:100vw;
+    height:100vw;
     .swiper-img{
-      width:100%;
-      height:100%;
-      border-radius: .1rem;
+      width:100vw;
+      height:100vw;
     }
   }
 }

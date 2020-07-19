@@ -1,18 +1,26 @@
 <template>
-<div>
+<div class="wrap">
   <common-header></common-header>
   <search-bar></search-bar>
-  <div class="nav">
-    <home-swiper :swiperList="swiperList"></home-swiper>
-    <icon-nav :navList="navList"></icon-nav>
+  <div class="wrapper-container" ref="container">
+    <div>
+      <transition name="fade">
+        <div v-if="pullDown" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
+      </transition>
+      <div class="nav">
+        <home-swiper :swiperList="swiperList"></home-swiper>
+        <icon-nav :navList="navList"></icon-nav>
+      </div>
+      <recommend-goods :goodsList="goodsList" :pullingUp="pullingUp"></recommend-goods>
+    </div>
   </div>
-  <recommend-goods :goodsList="goodsList"></recommend-goods>
-  <the-footer></the-footer>
+  <the-footer :current="current"></the-footer>
   <loadings :showLoading="showLoading"></loadings>
 </div>
 </template>
 
 <script>
+
 import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from'@/components/Header';
 import SearchBar from'@/components/SearchBar';
@@ -21,14 +29,6 @@ import IconNav from'./IconNav';
 import RecommendGoods from'./recommendGoods';
 import TheFooter from'@/components/Footer';
 export default {
-  data(){
-    return {
-      showLoading:true,
-      swiperList:[],
-      navList:[],
-      goodsList:[],
-    }
-  },
   components:{
     Loadings,
     CommonHeader,
@@ -38,66 +38,132 @@ export default {
     RecommendGoods,
     TheFooter
   },
-  mounted(){
+  data(){
+    return {
+      current:1,
+      pullDown:false,
+      pullingUp:true,
+      showLoading:true,
+      swiperList:[],
+      navList:[],
+      goodsList:[
+        {img:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1595089809499&di=2780ef0a304801833582fa2aaaf94015&imgtype=0&src=http%3A%2F%2Fwww.100estore.com%2Fr%2Fgou%2Fu%2F201508%2F190953378vt6.jpg"},
+        {img:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1595089809499&di=2780ef0a304801833582fa2aaaf94015&imgtype=0&src=http%3A%2F%2Fwww.100estore.com%2Fr%2Fgou%2Fu%2F201508%2F190953378vt6.jpg"},
+      ],
+      scroll:null,
+      page:1,
+      total:0
+    }
+  },
+  created() {
     this.showLoading = true;
-    this.getSwiper();
-    this.getIconNav();
-    this.getRecommendGoods();
-    this.showLoading = false;
   },
   methods:{
+    getBscrollBoxHeight(){
+      let bodyHeight = document.body.clientHeight;
+      const html = document.querySelector('html');
+      let WindowHeight = bodyHeight / parseFloat(html.style.fontSize);
+      let BscBoxHeight = WindowHeight - 2.7 + 'rem';
+      this.$refs.container.style.height = BscBoxHeight
+    },
     //请求轮播图数据(本地存储还没设置)
     async getSwiper(){
-      // const swiperList = localStorage.getItem('swiperList')
-      //   if(swiperList){
-      //       // this.swiperList = swiperList
-      //   }else{
-          const swiperList = await this.axios.get('http://api.4yue.top/index.php/api/swiper?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
-          this.swiperList = swiperList.data.data
-          // this.swiperList = swiperList
-          // localStorage.setItem('swiperList',swiperList)
-        // }
-
+      const swiperList = await this.axios.get('http://api.4yue.top/index.php/api/swiper?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
+      this.swiperList = swiperList.data.data
     },
     //使用axios请求数据需先安装插件，地址：https://www.npmjs.com/package/axios（4.17）
     async getIconNav(){
-        // const navList = Storage.getItem('navList')
-        // if(navList){
-        //     this.navList = navList
-        // }else{
-          // const navList;
-            const navList = await this.axios.get('http://api.4yue.top/index.php/api/navigate?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
-            this.navList = navList.data.data
-            // this.navList = navList
-            // Storage.setItem('navList',navList)
-        // }
-        // console.log(navList)
+      const navList = await this.axios.get('api/navigate?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
+      this.navList = navList.data.data
     },
     //请求推荐商品列表
-    async getRecommendGoods(){
-      // const swiperList = localStorage.getItem('swiperList')
-      //   if(swiperList){
-      //       // this.swiperList = swiperList
-      //   }else{
-          const goodsList = await this.axios.get('http://api.4yue.top/index.php/api/goods_list?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
-          this.goodsList = goodsList.data.data.goods
-          // this.swiperList = swiperList
-          // localStorage.setItem('swiperList',swiperList)
-        // }
-
+    async getRecommendGoods(page, type=''){
+      await this.axios.get(`api/goods_list?type=2&page=${page}&count=4&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM`).then(res =>{
+        if(type === ''){
+          this.goodsList = []
+        }
+        this.goodsList = this.goodsList.concat(res.data.data.goods);
+        this.total = res.data.data.total;
+        if(this.scroll && type){
+          if(type === 'down'){
+            this.goodsList = this.goodsList.slice(-4);
+            this.pullDown = false;
+          }
+          this.scroll.finishPullUp();
+          this.scroll.finishPullDown();
+          setTimeout(() => {
+            this.scroll.refresh();
+          }, 50)
+        }
+        this.showLoading = false;
+      });
     },
-  }
+  },
+  mounted(){
+    this.getBscrollBoxHeight();
+    this.getSwiper();
+    this.getIconNav();
+    this.getRecommendGoods(this.page);
+    this.scroll = new this.$BScroll('.wrapper-container',{
+        scrollY: true,
+        click: true,
+        probeType: 3,
+        pullDownRefresh:{
+          threshold: -10, // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+          stop: 0
+        },
+        pullUpLoad: {
+          threshold: 40, // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+        },
+    });
+    this.scroll.on('pullingDown',() => {
+      this.pullDown = true;
+      let page = Math.ceil(Math.random() * Math.ceil(this.total / 4))
+      this.getRecommendGoods(page,'down')
+      
+    });
+    this.scroll.on('pullingUp',() => {
+      if(this.goodsList.length < this.total){
+        this.page++;
+        this.getRecommendGoods(this.page,'up');
+      }else{
+        this.pullingUp = false
+      }
+    })
+  },
+
 }
 </script>
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
 @import '~@/assets/scss/iconfont';
-body{
-  position: relative;
+.fade-enter-active, .fade-leave-active {
+  transition: all .5s ease;
 }
-.nav{
-  background-color: #fff;
-  margin-top:1.8rem;
+.fade-enter, .fade-leave-to{
+  transform: scale(0);
 }
+.wrap {
+  padding-top: 1.8rem;
+  .wrapper-container{
+    touch-action: none;
+    overflow:hidden;
+    .loading{
+      font-size:.2rem;
+      color:#999;
+      padding-bottom:.2rem;
+      text-align:center;
+      img{
+        width:.3rem;
+        height:.3rem;
+      }
+    }
+  }
+  .nav{
+    height:4.9rem;
+    background-color: #fff;
+  }
+}
+
 
 </style>

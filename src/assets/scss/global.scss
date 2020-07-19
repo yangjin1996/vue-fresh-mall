@@ -3,6 +3,22 @@ $color-b : #414040;
 $color-c : #f5f5f5;
 $color-n : #999999;
 $color-s : #666666;
+$Header-h: .8rem;
+$search-h: .9rem;
+$footer-h:1rem;
+
 html,body{
   background-color: #f5f5f5!important;
 }
+@mixin text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+}
+
+@mixin d-flex($flex-d:row,$justify-c:center,$aligin-i:center) {
+  display:flex;
+  flex-direction: $flex-d;
+  justify-content:$justify-c;
+  align-items:$aligin-i;
+} 

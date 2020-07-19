@@ -4,12 +4,12 @@ module.exports = {
     host:'localhost',
     port:8088,
     proxy:{
-      '/api':{
+      '^/api':{
           target:"http://api.4yue.top/index.php/",
           changeOrigin:true,
-          // pathRewrite:{
-          //     '^/api':''
-          // }
+          pathRewrite:{
+              '^/api':'/app'
+          }
       } 
    }
   }
