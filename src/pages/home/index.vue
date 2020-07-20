@@ -97,10 +97,6 @@ export default {
     },
     //
     async getGoodsDetail(){
-      //商品详情
-      // await this.axios.get(`api/goods?goods_id=57?type=2`).then(res => {
-      //   console.log(res.data.data.gallery)
-      // })
       //一级分类，二级分类（携带cat_id参数）
       // await this.axios.get(`api/goods_list?type=2&cat_id=27`).then(res => {
       //   console.log(res)

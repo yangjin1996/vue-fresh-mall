@@ -49,6 +49,7 @@ export default {
   position: fixed;
   top:0;
   z-index: 2;
+  box-sizing:border-box;
   .back{
     position:absolute;
     left:.2rem;

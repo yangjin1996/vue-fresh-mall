@@ -1,7 +1,7 @@
 <template>
 <swiper v-if="goodsSwiperList.length > 0" :options="swiperOptions" class="swiper-list">
   <swiper-slide v-for="(item,keys) of goodsSwiperList" :key="keys" class="swiper-cell">
-    <img :src="item" class="swiper-img">
+    <img v-lazy="item" class="swiper-img">
   </swiper-slide>
   <div class="swiper-pagination" slot="pagination"></div>
 </swiper>
@@ -48,8 +48,6 @@ export default {
   padding-top:.8rem;
   box-sizing:border-box;
   .swiper-cell{
-    width:100vw;
-    height:100vw;
     .swiper-img{
       width:100vw;
       height:100vw;

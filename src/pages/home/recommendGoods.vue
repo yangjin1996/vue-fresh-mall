@@ -28,14 +28,15 @@ export default {
     }
   },
   methods: {
-    toGoodsDetail(goodsId){
+    toGoodsDetail(goods_id){
       this.$router.push({
         path:'/goods-detail',
         query:{
-          goodsId
+          goods_id
         }
       })
-    }
+    },
+    
   },
 }
 </script>

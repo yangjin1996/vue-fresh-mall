@@ -1,7 +1,7 @@
 <template>
 <div class="icon-container">
   <div class="icon-nav" :style="'width:'+ width +'rem'">
-    <div class="icon-cell" v-for="(item,i) of navList" :key="i">
+    <div class="icon-cell" v-for="(item,i) of navList" :key="i" @click="toCategory(item.cat_id)">
       <img :src="item.img">
       <span>{{item.name}}</span>
     </div>
@@ -24,7 +24,7 @@ export default {
   mounted() {
     this.scroll = new this.$BScroll('.icon-container',{
         scrollX: true,
-        click: true,
+        click: false,
         probeType: 3,
         bounce: true,
         // momentumLimitDistance: 5,
@@ -34,6 +34,16 @@ export default {
         },
         // mouseWheel: true,
     });
+  },
+  methods: {
+    toCategory(cat_id){
+      this.$router.push({
+        path:'/category',
+        query:{
+          cat_id
+        }
+      })
+    },
   },
   computed: {
     width(){

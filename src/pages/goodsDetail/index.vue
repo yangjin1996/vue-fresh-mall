@@ -4,9 +4,9 @@
   <goods-swiper :goodsSwiperList="goodsSwiperList"></goods-swiper>
   <div class="goods-mes">
     <div class="goods-info">
-      <h3 class="goods-title">龙果火火龙果火龙果火龙果火龙果龙果火龙果火龙果火龙果</h3>
+      <h3 class="goods-title">{{goods.goods_name}}</h3>
       <p class="goods-note">源于自然</p>
-      <p class="goods-price">代理价：<span>￥20.00</span></p>
+      <p class="goods-price">代理价：<span>￥{{goods.goods_price}}</span></p>
     </div>
     <div class="sale-num">
       <span class="select-num">选择数量</span>
@@ -19,29 +19,51 @@
   </div>
   <div class="goods-img">
     <h3><span>—— </span>商品详情<span> ——</span></h3>
-    <img v-for="(item,index) of goodsImg" :src="item" :key="index" />
+    <img v-for="(item,index) of goods.content" :src="item" :key="index" />
   </div>
   <div class="user-option">
     <p class="option add-cart">加入购物车</p>
     <p class="option buy-goods">立即购买</p>
   </div>
+  <loadings :showLoading="showLoading"></loadings>
 </div>
 </template>
 
 <script>
+import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from '@/components/Header'
 import GoodsSwiper from './goodsSwiper'
 export default {
   components:{
+    Loadings,
     CommonHeader,
     GoodsSwiper
   },
   data() {
     return {
+      showLoading:true,
       title:'商品详情',
       back:true,
-      goodsSwiperList:[],
-      goodsImg:[]
+      goodsSwiperList:[
+        '@/assets/images/loading-bubbles.svg',
+      ],
+      goods:{},
+      goods_id:0
+    }
+  },
+  mounted() {
+    this.getGoodsDetail();
+  },
+  methods: {
+    async getGoodsDetail(){
+      // 商品详情
+      this.goods_id = this.$route.query.goods_id;
+      await this.axios.get(`api/goods?goods_id=${this.goods_id}?type=2`).then(res => {
+        this.goodsSwiperList = res.data.data.gallery;
+        this.goodsImg = res.data.data.goods.content;
+        this.goods = res.data.data.goods;
+        this.showLoading = false;
+      })
     }
   },
 }

@@ -19,11 +19,11 @@ export default {
 .mask{
   width:100%;
   height:100vh;
-  background-color: rgba(0,0,0,.2);
+  background-color: rgba(0,0,0,.4);
   position: fixed;
   top:0;
   left:0;
-  z-index: 9;
+  z-index: 10000;
   img{
     width:25%;
     height:25%;
