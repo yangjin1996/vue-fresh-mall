@@ -5,6 +5,7 @@ import Search from '../pages/search/index.vue'
 import GoodsDetail from '../pages/goodsDetail/index.vue'
 import Cart from '../pages/cart/index.vue'
 import User from '../pages/user/index.vue'
+import Category from '../pages/category/index.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ Vue.use(VueRouter)
     path: '/cart',
     name: 'Cart',
     component: Cart
+  },
+  {
+    path: '/category',
+    name: 'Category',
+    component: Category
   },
 ]
 

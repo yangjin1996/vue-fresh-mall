@@ -19,7 +19,7 @@
   </div>
   <div class="goods-img">
     <h3><span>—— </span>商品详情<span> ——</span></h3>
-    <img v-for="(item,index) of goodsSwiperList" :src="item.img" :key="index" />
+    <img v-for="(item,index) of goodsImg" :src="item" :key="index" />
   </div>
   <div class="user-option">
     <p class="option add-cart">加入购物车</p>
@@ -40,11 +40,8 @@ export default {
     return {
       title:'商品详情',
       back:true,
-      goodsSwiperList:[
-        {img:'https://i01piccdn.sogoucdn.com/d0a46525f7ce3fa1'},
-        {img:'https://i02piccdn.sogoucdn.com/911f2849130888fb'},
-        {img:'https://i01piccdn.sogoucdn.com/0f310b544e93dfe3'}
-      ]
+      goodsSwiperList:[],
+      goodsImg:[]
     }
   },
 }

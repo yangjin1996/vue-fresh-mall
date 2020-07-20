@@ -1,6 +1,6 @@
 <template>
 <div class="wrap">
-  <common-header></common-header>
+  <common-header :backUrl="backUrl"></common-header>
   <search-bar></search-bar>
   <div class="wrapper-container" ref="container">
     <div>
@@ -28,6 +28,7 @@ import HomeSwiper from'./Swiper';
 import IconNav from'./IconNav';
 import RecommendGoods from'./recommendGoods';
 import TheFooter from'@/components/Footer';
+import { Storage } from'@/utils/storage';
 export default {
   components:{
     Loadings,
@@ -40,6 +41,7 @@ export default {
   },
   data(){
     return {
+      backUrl:'',
       current:1,
       pullDown:false,
       pullingUp:true,
@@ -47,8 +49,8 @@ export default {
       swiperList:[],
       navList:[],
       goodsList:[
-        {img:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1595089809499&di=2780ef0a304801833582fa2aaaf94015&imgtype=0&src=http%3A%2F%2Fwww.100estore.com%2Fr%2Fgou%2Fu%2F201508%2F190953378vt6.jpg"},
-        {img:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1595089809499&di=2780ef0a304801833582fa2aaaf94015&imgtype=0&src=http%3A%2F%2Fwww.100estore.com%2Fr%2Fgou%2Fu%2F201508%2F190953378vt6.jpg"},
+        {img:"@/components/loading-bubbles.svg"},
+        {img:"@/components/loading-bubbles.svg"},
       ],
       scroll:null,
       page:1,
@@ -58,6 +60,11 @@ export default {
   created() {
     this.showLoading = true;
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.backUrl = from.path
+    })
+  },
   methods:{
     getBscrollBoxHeight(){
       let bodyHeight = document.body.clientHeight;
@@ -66,19 +73,42 @@ export default {
       let BscBoxHeight = WindowHeight - 2.7 + 'rem';
       this.$refs.container.style.height = BscBoxHeight
     },
-    //请求轮播图数据(本地存储还没设置)
+    //请求轮播图数据
     async getSwiper(){
-      const swiperList = await this.axios.get('http://api.4yue.top/index.php/api/swiper?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
-      this.swiperList = swiperList.data.data
+      const swiper = Storage.getItem('swiperList');
+      if(swiper === '[]'){
+        const swiperList = await this.axios.get('http://api.4yue.top/index.php/api/swiper?type=2');
+        this.swiperList = swiperList.data.data;
+        Storage.setItem('swiperList',this.swiperList)
+      }else{
+        this.swiperList = swiper;
+      }
     },
     //使用axios请求数据需先安装插件，地址：https://www.npmjs.com/package/axios（4.17）
     async getIconNav(){
-      const navList = await this.axios.get('api/navigate?type=2&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM');
-      this.navList = navList.data.data
+      const nav = Storage.getItem('navList');
+      if(nav === '[]'){
+        const navList = await this.axios.get('api/navigate?type=2');
+        this.navList = navList.data.data
+        Storage.setItem('navList',this.navList)
+      }else{
+        this.navList = nav;
+      }
+    },
+    //
+    async getGoodsDetail(){
+      //商品详情
+      // await this.axios.get(`api/goods?goods_id=57?type=2`).then(res => {
+      //   console.log(res.data.data.gallery)
+      // })
+      //一级分类，二级分类（携带cat_id参数）
+      // await this.axios.get(`api/goods_list?type=2&cat_id=27`).then(res => {
+      //   console.log(res)
+      // })
     },
     //请求推荐商品列表
     async getRecommendGoods(page, type=''){
-      await this.axios.get(`api/goods_list?type=2&page=${page}&count=4&appkey=f68bSYqte0m6EibwhARrzTcYDPoV0FobCi06uDfM3eF4QGQQKSywmd71ytM`).then(res =>{
+      await this.axios.get(`api/goods_list?type=2&page=${page}&count=4`).then(res =>{
         if(type === ''){
           this.goodsList = []
         }
@@ -104,6 +134,7 @@ export default {
     this.getSwiper();
     this.getIconNav();
     this.getRecommendGoods(this.page);
+    this.getGoodsDetail()
     this.scroll = new this.$BScroll('.wrapper-container',{
         scrollY: true,
         click: true,
@@ -113,7 +144,7 @@ export default {
           stop: 0
         },
         pullUpLoad: {
-          threshold: 40, // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+          threshold: 40, 
         },
     });
     this.scroll.on('pullingDown',() => {

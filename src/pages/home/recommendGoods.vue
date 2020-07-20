@@ -3,7 +3,7 @@
   <h2>-- 推荐商品 --</h2>
   <ul class="recommend-list">
     <li v-for="(item,index) of goodsList" :key="index" class="recommend-cell" @click="toGoodsDetail(item.id)">
-      <img :src="item.img" alt="">
+      <img v-lazy="item.img" alt="">
       <div class="goods-info">
         <h3>{{item.name}}</h3>
         <p class="goods-sale-num">已售{{item.sale_num}}箱</p>

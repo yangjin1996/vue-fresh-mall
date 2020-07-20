@@ -17,7 +17,7 @@ export default {}
 body,html{
   width:100%;
   height:100%;
-  font-family:'PingFangSCB'!important;
+  font-family:'SongTi'!important;
 }
 body{
   background-color: #f5f5f5;

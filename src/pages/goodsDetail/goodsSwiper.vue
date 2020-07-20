@@ -1,7 +1,7 @@
 <template>
 <swiper v-if="goodsSwiperList.length > 0" :options="swiperOptions" class="swiper-list">
   <swiper-slide v-for="(item,keys) of goodsSwiperList" :key="keys" class="swiper-cell">
-    <img :src="item.img" class="swiper-img">
+    <img :src="item" class="swiper-img">
   </swiper-slide>
   <div class="swiper-pagination" slot="pagination"></div>
 </swiper>
@@ -14,7 +14,7 @@ export default {
   props:{
     goodsSwiperList:{
       type:Array
-    }
+    },
   },
   components: {
     swiper,

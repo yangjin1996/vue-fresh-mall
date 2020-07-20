@@ -15,11 +15,19 @@ export default {
     back:{
       type:Boolean,
       default:false
+    },
+    backUrl:{
+      type:String,
+      default:''
     }
   },
   methods:{
     toBack () {
-      this.$router.go(-1);
+      if(this.backUrl === ''){
+        this.$router.push('/')
+      }else{
+        this.$router.push(this.backUrl)
+      }
     }
   }
 }
