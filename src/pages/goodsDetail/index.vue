@@ -1,6 +1,6 @@
 <template>
 <div class='wrap'>
-  <common-header :title="title" :back="back"></common-header>
+  <common-header :backUrl="backUrl" :title="title" :back="back"></common-header>
   <goods-swiper :goodsSwiperList="goodsSwiperList"></goods-swiper>
   <div class="goods-mes">
     <div class="goods-info">
@@ -43,6 +43,7 @@ export default {
     return {
       showLoading:true,
       title:'商品详情',
+      backUrl:'/category',
       back:true,
       goodsSwiperList:[
         '@/assets/images/loading-bubbles.svg',

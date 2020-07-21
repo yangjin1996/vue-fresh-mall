@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <span v-if="back" class="back iconfont" @click="toBack">&#xe60a;</span>
+    <span v-if="back" :backUrl="backUrl" class="back iconfont" @click="toBack">&#xe60a;</span>
     <div class="title">{{title}}</div>
   </div>
 </template>

@@ -8,7 +8,7 @@
         <h3>{{item.name}}</h3>
         <p class="goods-sale-num">已售{{item.sale_num}}箱</p>
         <p class="goods-price">￥{{item.price}}</p>
-        <span class="cart iconfont">&#xe63b;</span>
+        <span class="cart iconfont" @click.stop="addCart(item)">&#xe63b;</span>
       </div>
     </li>
   </ul>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { Storage } from'@/utils/storage.js';
 export default {
   props:{
     goodsList:{
@@ -25,6 +26,12 @@ export default {
     },
     pullingUp:{
       type:Boolean,
+    }
+  },
+  data() {
+    return {
+      cartGoodsList:[],
+      buyNumber:1,
     }
   },
   methods: {
@@ -36,7 +43,19 @@ export default {
         }
       })
     },
-    
+    addCart(item){
+      const goodsList = Storage.getItem('cartGoodsList');
+      let list = [];
+      if(goodsList !== '[]'){
+        list = goodsList;
+        list.push(item);
+        this.cartGoodsList = list;
+      }else{
+        list.push(item);
+        this.cartGoodsList = list;
+      }
+      Storage.setItem('cartGoodsList',this.cartGoodsList);
+    },
   },
 }
 </script>

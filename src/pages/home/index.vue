@@ -95,13 +95,6 @@ export default {
         this.navList = nav;
       }
     },
-    //
-    async getGoodsDetail(){
-      //一级分类，二级分类（携带cat_id参数）
-      // await this.axios.get(`api/goods_list?type=2&cat_id=27`).then(res => {
-      //   console.log(res)
-      // })
-    },
     //请求推荐商品列表
     async getRecommendGoods(page, type=''){
       await this.axios.get(`api/goods_list?type=2&page=${page}&count=4`).then(res =>{
@@ -130,7 +123,6 @@ export default {
     this.getSwiper();
     this.getIconNav();
     this.getRecommendGoods(this.page);
-    this.getGoodsDetail()
     this.scroll = new this.$BScroll('.wrapper-container',{
         scrollY: true,
         click: true,
