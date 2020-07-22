@@ -1,5 +1,5 @@
 
-class Storage {
+class handelGoodsNum {
   static setItem(name,data){
     sessionStorage.setItem(name,JSON.stringify(data))
   }
@@ -9,5 +9,5 @@ class Storage {
 }
 
 export {
-  Storage
+  handelGoodsNum
 }

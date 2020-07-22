@@ -1,7 +1,7 @@
 <template>
 <div class='wrap'>
   <common-header :title="title" :back="back"></common-header>
-  <div v-if="cartGoodsList" class="wrap-container">
+  <div v-if="cartGoodsList.length === 0" class="wrap-container">
     <div class="container">
       <img src="@/assets/images/noGoods.png">
       <h3>你还没有相关订单</h3>
@@ -9,36 +9,36 @@
       <div class="jump">去逛逛</div>
     </div>
   </div>
-  <div else class="cart-goods">
+  <div else class="cart-goods" ref="cartGoods">
     <ul class="goods-container">
-      <li class="goods">
-        <div class="select-buttom" @click="selected = !selected">
-           <span v-show="selected" class="iconfont">&#xe627;</span>
+      <li class="goods" v-for="(item,index) of cartGoodsList" :key="index">
+        <div class="select-buttom" @click="changeStatus(item)">
+           <span v-show="item.selected" class="iconfont">&#xe627;</span>
         </div>
-				<img class="goods-img" src="">
+				<img class="goods-img" v-lazy="item.img">
 				<div class="goods-info">
-					<p class="goods-title">苹果苹果苹果果苹果苹果</p>
-					<p class="goods-weight">200g/袋</p>
-					<p class="goods-price">￥29.9</p>
+					<p class="goods-title">{{item.name}}</p>
+					<p class="goods-market-price">{{item.market_price}}</p>
+					<p class="goods-price">￥{{item.price}}</p>
 				</div>
 				<div class="button">
-          <span class="iconfont reduce">&#xe60c;</span>
-          <span class="number">1</span>
-          <span class="iconfont add">&#xe626;</span>
+          <span class="iconfont reduce" @click="reduceNumber(item)">&#xe60c;</span>
+          <span class="number">{{item.buyNumber}}</span>
+          <span class="iconfont add" @click="addNumber(item)">&#xe626;</span>
         </div>
 			</li>
     </ul>
   </div>
   <div class="pay-container" v-show="selected">
     <div class="pay-left">
-      <div class="select-buttom" @click="selected = !selected">
-        <span v-show="selected" class="iconfont">&#xe627;</span>
+      <div class="select-buttom" @click="selectedAll">
+        <span v-show="selectedAllButtn" class="iconfont">&#xe627;</span>
       </div>
       <span class="all-selected">全选</span>
     </div>
     <div class="pay-right">
       <span class="total-money">合计：</span>
-      <span class="money">￥29.9元</span>
+      <span class="money">￥{{totalMoney}}元</span>
       <div class="pay">去支付</div>
     </div>
   </div>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import { Storage } from'@/utils/storage.js';
 import CommonHeader from '@/components/Header'
 import CommonFooter from '@/components/Footer'
 export default {
@@ -59,10 +60,81 @@ export default {
       title:'购物车',
       back:true,
       current:2,
-      cartGoodsList:false,
+      scroll:'',
+      cartGoodsList:[],
       selected:true,
-      cartGoods:[]
+      selectedAllButtn:true,
+      cartGoods:[],
+      buyNumber:1,
+      totalMoney:0
     }
+  },
+  mounted() {
+    this.getCartGoodsList();
+    let Height = this.getHeight();
+    this.$refs.cartGoods.style.height = window.innerHeight - 2*Height + 'px';
+    this.scroll = new this.$BScroll('.cart-goods',{
+      scrollY: true,
+      click: true,
+      probeType: 3,
+    });
+  },
+  methods: {
+    getHeight(){
+      const html = document.querySelector('html');
+      const fontSize = window.innerWidth / 7.5;
+      html.style.fontSize = fontSize + 'px';
+      return fontSize;
+    },
+    getCartGoodsList(){
+      let cartGoodsListData = Storage.getItem('cartGoodsList');
+      cartGoodsListData.forEach(item => {
+        item.selected = true;
+        this.totalMoney += (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+      });
+      this.cartGoodsList = cartGoodsListData;
+    },
+    changeStatus(item){
+      item.selected = !item.selected;
+      let price = (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+      if(!item.selected){
+        this.totalMoney -= price;
+      }else{
+        this.totalMoney += price;
+      };
+      this.selectedAllButtn = !this.cartGoodsList.some(item => {
+        return item.selected === false
+      })
+    },
+    selectedAll(){
+      this.selectedAllButtn = !this.selectedAllButtn;
+      if(this.selectedAllButtn === true){
+        this.cartGoodsList.forEach(item => {
+          item.selected = true;
+          this.totalMoney += parseFloat(item.price)*item.buyNumber;
+        });
+        this.totalMoney = this.totalMoney.toFixed(2)*1;
+        this.cartGoodsList.forEach(item => {
+          item.selected = true;
+        })
+      }else{
+        this.totalMoney = 0;
+        this.cartGoodsList.forEach(item => {
+          item.selected = false;
+        })
+      }
+    },
+     reduceNumber(item){
+       if(item.buyNumber === 1){
+         return
+       }
+      item.buyNumber -= 1;
+      this.totalMoney -= (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+     },
+     addNumber(item){
+       item.buyNumber += 1;
+       this.totalMoney += (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+     }
   },
 }
 </script>
@@ -116,8 +188,8 @@ export default {
   box-sizing:border-box;
   .goods-container{
     width:100%;
-    height:100%;
     padding:.2rem;
+    padding-top:1rem;
     box-sizing:border-box;
     .goods{
 			width:100%;
@@ -147,10 +219,10 @@ export default {
 					white-space:nowrap;
 					text-overflow:ellipsis;
 				}
-				.goods-weight{
-					font-size:.24rem;
-					color:#2b2b2b;
-					font-weight:550;
+				.goods-market-price{
+					font-size:.26rem;
+					color:#aaa;
+          text-decoration:line-through;
 				}
         .goods-price{
           color:#ef8203;
@@ -194,7 +266,6 @@ export default {
 				width:2.15rem;
 				height:2.15rem;
 				border-radius:.1rem;
-				border:1px solid yellow;
 			}
 		}
   }

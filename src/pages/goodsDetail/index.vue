@@ -5,15 +5,15 @@
   <div class="goods-mes">
     <div class="goods-info">
       <h3 class="goods-title">{{goods.goods_name}}</h3>
-      <p class="goods-note">源于自然</p>
+      <p class="goods-note">市场价：<span>{{goods.market_price}}</span></p>
       <p class="goods-price">代理价：<span>￥{{goods.goods_price}}</span></p>
     </div>
     <div class="sale-num">
       <span class="select-num">选择数量</span>
       <div class="button">
-        <span class="iconfont reduce">&#xe60c;</span>
-        <span class="number">1</span>
-        <span class="iconfont add">&#xe626;</span>
+        <span class="iconfont reduce" @click="reduceNumber(goods)">&#xe60c;</span>
+        <span class="number">{{buyNumber}}</span>
+        <span class="iconfont add" @click="addNumber(goods)">&#xe626;</span>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@
     <img v-for="(item,index) of goods.content" :src="item" :key="index" />
   </div>
   <div class="user-option">
-    <p class="option add-cart">加入购物车</p>
+    <p class="option add-cart" @click="addCart(goods)">加入购物车</p>
     <p class="option buy-goods">立即购买</p>
   </div>
   <loadings :showLoading="showLoading"></loadings>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { Storage } from'@/utils/storage.js';
 import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from '@/components/Header'
 import GoodsSwiper from './goodsSwiper'
@@ -43,17 +44,28 @@ export default {
     return {
       showLoading:true,
       title:'商品详情',
-      backUrl:'/category',
+      backUrl:'/',
       back:true,
       goodsSwiperList:[
         '@/assets/images/loading-bubbles.svg',
       ],
+      cartGoodsList:[],
       goods:{},
-      goods_id:0
+      goods_id:0,
+      buyNumber:1,
     }
   },
   mounted() {
     this.getGoodsDetail();
+    const goodsList = Storage.getItem('cartGoodsList');
+    let exeGoods = goodsList.map(val => {
+      return val.id;
+    })
+    let index = exeGoods.indexOf(parseInt(this.$route.query.goods_id));
+    if(index !== -1){
+      goodsList[index].buyNumber += this.buyNumber;
+      this.buyNumber = goodsList[index].buyNumber;
+    }
   },
   methods: {
     async getGoodsDetail(){
@@ -65,7 +77,59 @@ export default {
         this.goods = res.data.data.goods;
         this.showLoading = false;
       })
-    }
+    },
+    addCart(item){
+      item = this.initToCartGoods(item);
+      const goodsList = Storage.getItem('cartGoodsList');
+      let list = [];
+      let exeGoods = goodsList.map(val => {
+        return val.id;
+      })
+      let index = exeGoods.indexOf(item.id);
+      if(index !== -1){
+        goodsList[index].buyNumber += this.buyNumber;
+        this.buyNumber = goodsList[index].buyNumber;
+        list = goodsList;
+      }else{
+        item.buyNumber = this.buyNumber;
+        list = goodsList;
+        list.push(item);
+      }
+      this.cartGoodsList = list;
+      Storage.setItem('cartGoodsList',this.cartGoodsList);
+      alert('添加购物车成功')
+    },
+    initToCartGoods(item){
+      const id = item.goods_id;
+      const img = item.goods_img;
+      const name = item.goods_name;
+      const price = item.goods_price;
+      const market_price = item.market_price;
+      const sale_num = item.sale_num;
+      item = {};
+      item.id = id;
+      item.img = img;
+      item.name = name;
+      item.price = price;
+      item.market_price = market_price;
+      item.sale_num = sale_num;
+      return item;
+    },
+     reduceNumber(item){
+       if(!item.buyNumber || item.buyNumber === 1){
+         return
+       }else{
+        item.buyNumber -= 1;
+        this.buyNumber = item.buyNumber;
+       }
+     },
+     addNumber(item){
+       if(!item.buyNumber){
+         item.buyNumber = 1
+       }
+       item.buyNumber += 1;
+       this.buyNumber = item.buyNumber;
+     }
   },
 }
 </script>
@@ -89,6 +153,9 @@ export default {
       font-size:.24rem;
       color:$color-n;
       margin:.2rem 0 .4rem 0;
+      span{
+        text-decoration: line-through;
+      }
     }
     .goods-price{
       color:#2d2d2d;

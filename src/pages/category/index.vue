@@ -61,7 +61,7 @@ export default {
     async getCatgoryGoods(){
       this.showLoading = true;
       const nav = Storage.getItem('navList');
-      if(nav === '[]'){
+      if(nav.length === 0){
         const navList = await this.axios.get('api/navigate?type=2');
         this.navList = navList.data.data;
         Storage.setItem('navList',this.navList);
@@ -76,7 +76,7 @@ export default {
       this.showLoading = true;
       this.currentCatId = cat_id;
       const goods = Storage.getItem(`categorygoodsList${cat_id}`);
-      if(goods === '[]'){
+      if(goods.length === 0){
         await this.axios.get(`api/goods_list?type=2&cat_id=${cat_id}`).then(res => {
           this.goodsList = res.data.data.goods;
           Storage.setItem(`categorygoodsList${cat_id}`,this.goodsList);

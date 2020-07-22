@@ -46,14 +46,19 @@ export default {
     addCart(item){
       const goodsList = Storage.getItem('cartGoodsList');
       let list = [];
-      if(goodsList !== '[]'){
+      let exeGoods = goodsList.map(val => {
+        return val.id;
+      })
+      let index = exeGoods.indexOf(item.id);
+      if(index !== -1){
+        goodsList[index].buyNumber += 1
+        list = goodsList;
+      }else{
+        item.buyNumber = this.buyNumber;
         list = goodsList;
         list.push(item);
-        this.cartGoodsList = list;
-      }else{
-        list.push(item);
-        this.cartGoodsList = list;
       }
+      this.cartGoodsList = list;
       Storage.setItem('cartGoodsList',this.cartGoodsList);
     },
   },

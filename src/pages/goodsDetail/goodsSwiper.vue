@@ -36,13 +36,13 @@ export default {
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
 /deep/.swiper-pagination{
-  color:rgba(0,0,0,0.5);
+  color:$color-a;
 }
 /deep/.swiper-pagination-current{
-  color:rgba(0,0,0,0.7);
+  color:$color-a;
 }
 /deep/.swiper-pagination-total{
-  color:rgba(0,0,0,0.5);
+  color:$color-a;
 }
 .swiper-list{
   padding-top:.8rem;

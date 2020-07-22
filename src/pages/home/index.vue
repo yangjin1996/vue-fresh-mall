@@ -76,7 +76,7 @@ export default {
     //请求轮播图数据
     async getSwiper(){
       const swiper = Storage.getItem('swiperList');
-      if(swiper === '[]'){
+      if(swiper.length === 0){
         const swiperList = await this.axios.get('http://api.4yue.top/index.php/api/swiper?type=2');
         this.swiperList = swiperList.data.data;
         Storage.setItem('swiperList',this.swiperList)
@@ -87,7 +87,7 @@ export default {
     //使用axios请求数据需先安装插件，地址：https://www.npmjs.com/package/axios（4.17）
     async getIconNav(){
       const nav = Storage.getItem('navList');
-      if(nav === '[]'){
+      if(nav.length === 0){
         const navList = await this.axios.get('api/navigate?type=2');
         this.navList = navList.data.data
         Storage.setItem('navList',this.navList)
