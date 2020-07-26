@@ -56,7 +56,7 @@ export default {
       }else{
         item.buyNumber = this.buyNumber;
         list = goodsList;
-        list.push(item);
+        list.unshift(item);
       }
       this.cartGoodsList = list;
       Storage.setItem('cartGoodsList',this.cartGoodsList);

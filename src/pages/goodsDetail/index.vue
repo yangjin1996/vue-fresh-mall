@@ -11,9 +11,9 @@
     <div class="sale-num">
       <span class="select-num">选择数量</span>
       <div class="button">
-        <span class="iconfont reduce" @click="reduceNumber(goods)">&#xe60c;</span>
+        <span class="iconfont reduce" @click="reduceNumber">&#xe60c;</span>
         <span class="number">{{buyNumber}}</span>
-        <span class="iconfont add" @click="addNumber(goods)">&#xe626;</span>
+        <span class="iconfont add" @click="addNumber">&#xe626;</span>
       </div>
     </div>
   </div>
@@ -57,15 +57,7 @@ export default {
   },
   mounted() {
     this.getGoodsDetail();
-    const goodsList = Storage.getItem('cartGoodsList');
-    let exeGoods = goodsList.map(val => {
-      return val.id;
-    })
-    let index = exeGoods.indexOf(parseInt(this.$route.query.goods_id));
-    if(index !== -1){
-      goodsList[index].buyNumber += this.buyNumber;
-      this.buyNumber = goodsList[index].buyNumber;
-    }
+    this.getBuynumber();
   },
   methods: {
     async getGoodsDetail(){
@@ -78,22 +70,32 @@ export default {
         this.showLoading = false;
       })
     },
+    getBuynumber(){
+      const id = this.$route.query.goods_id;
+      const goodsList = Storage.getItem('cartGoodsList');
+      let exeGoods = goodsList.map(val => {
+        return val.id;
+      })
+      let index = exeGoods.indexOf(parseInt(id));
+      if(index !== -1){
+        this.buyNumber = goodsList[index].buyNumber;
+      }
+    },
     addCart(item){
       item = this.initToCartGoods(item);
       const goodsList = Storage.getItem('cartGoodsList');
       let list = [];
       let exeGoods = goodsList.map(val => {
         return val.id;
-      })
+      });
       let index = exeGoods.indexOf(item.id);
       if(index !== -1){
-        goodsList[index].buyNumber += this.buyNumber;
-        this.buyNumber = goodsList[index].buyNumber;
+        goodsList[index].buyNumber = this.buyNumber;
         list = goodsList;
       }else{
         item.buyNumber = this.buyNumber;
         list = goodsList;
-        list.push(item);
+        list.unshift(item);
       }
       this.cartGoodsList = list;
       Storage.setItem('cartGoodsList',this.cartGoodsList);
@@ -115,22 +117,17 @@ export default {
       item.sale_num = sale_num;
       return item;
     },
-     reduceNumber(item){
-       if(!item.buyNumber || item.buyNumber === 1){
-         return
-       }else{
-        item.buyNumber -= 1;
-        this.buyNumber = item.buyNumber;
-       }
-     },
-     addNumber(item){
-       if(!item.buyNumber){
-         item.buyNumber = 1
-       }
-       item.buyNumber += 1;
-       this.buyNumber = item.buyNumber;
-     }
-  },
+    reduceNumber(){
+      if(this.buyNumber === 1){
+        return
+      }else{
+        this.buyNumber -= 1;
+      }
+    },
+    addNumber(){
+      this.buyNumber += 1
+    },
+  }
 }
 </script>
 <style lang='scss' scoped>
@@ -203,43 +200,43 @@ export default {
     }
   }
 }
- .goods-img{
-    width:100%;
-    margin-bottom:1.2rem;
-    h3{
-      height:.6rem;
-      line-height:.6rem;
-      text-align:center;
-      font-size:.26rem;
-      color:#666;
-      font-weight:550;
-      span{
-        color:$color-n;
-      }
-    }
-    img{
-      width:100%;
+.goods-img{
+  width:100%;
+  margin-bottom:1.2rem;
+  h3{
+    height:.6rem;
+    line-height:.6rem;
+    text-align:center;
+    font-size:.26rem;
+    color:#666;
+    font-weight:550;
+    span{
+      color:$color-n;
     }
   }
-  .user-option{
+  img{
     width:100%;
+  }
+}
+.user-option{
+  width:100%;
+  height:1rem;
+  display:flex;
+  position:fixed;
+  left:0;
+  bottom:0;
+  .option{
+    color:#fff;
+    font-size:.26rem;
+    width:50%;
     height:1rem;
-    display:flex;
-    position:fixed;
-    left:0;
-    bottom:0;
-    .option{
-      color:#fff;
-      font-size:.26rem;
-      width:50%;
-      height:1rem;
-      @include d-flex;
-    }
-    .add-cart{
-      background-color:#ef8203;
-    }
-    .buy-goods{
-      background-color:$color-a;
-    }
+    @include d-flex;
   }
+  .add-cart{
+    background-color:#ef8203;
+  }
+  .buy-goods{
+    background-color:$color-a;
+  }
+}
 </style>
