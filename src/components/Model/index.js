@@ -5,7 +5,7 @@ const model = {
     const vm = new ModelConstructor()
     vm.$mount(document.createElement('div'))
     document.body.appendChild(vm.$el)
-    Vue.prototype.$showModel = function({title = '标题',btn = {confirm:'',cancel:''},success = null,showText = ''}){
+    Vue.prototype.$showModel = function({title = '',btn = {confirm:'',cancel:''},success = null,showText = ''}){
       if(btn.confirm !== '' && btn.cancel !== ''){
         vm.visible = true;
         vm.selectSrc = true;

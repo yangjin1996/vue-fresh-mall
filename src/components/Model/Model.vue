@@ -66,20 +66,18 @@ export default {
   width:100%;
   height:100%;
   background-color: rgba($color: #000000, $alpha: .2);
-  position: absolute;
+  position: fixed;
   left:0;
   top:0;
   z-index: 10001;
   @include d-flex;
   .content{
-    width:3.5rem;
-    height:1.8rem;
-    border-radius: .1rem;
+    width:3.6rem;
+    height:1.7rem;
     background-color: #fff;
     .title{
       height:1rem;
-      font-size:.3rem;
-      font-weight: bold;
+      font-size:.24rem;
       border-bottom:1px solid #ccc;
       text-align:center;
       box-sizing: border-box;
@@ -90,7 +88,7 @@ export default {
       .left-container,.right-container{
         width:50%;
         height:.8rem;
-        font-size:.28rem;
+        font-size:.26rem;
         color:$color-a;
         @include d-flex;
       }
@@ -104,9 +102,10 @@ export default {
   .show{
     width:3.5rem;
     height:1rem;
+    font-size:.26rem;
     color:#fff;
     border-radius: .1rem;
-    background-color: rgba($color: #000000, $alpha: .5);
+    background-color: rgba($color: #000000, $alpha: .7);
     @include d-flex;
   }
 }

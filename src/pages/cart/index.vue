@@ -32,7 +32,7 @@
           <span class="number">{{item.buyNumber}}</span>
           <span class="iconfont add" @click.stop="addNumber(item)">&#xe626;</span>
         </div>
-        <div class="delete" @click.stop="deleteGoods(index)">删除</div>
+        <div class="delete" @touchend.stop="deleteGoods(index)">删除</div>
 			</li>
     </ul>
   </div>
@@ -45,7 +45,7 @@
     </div>
     <div class="pay-right">
       <span class="total-money">合计：</span>
-      <span class="money">￥{{totalMoney}}元</span>
+      <span class="money">￥ {{totalMoney.toFixed(2)}} 元</span>
       <div class="pay" @click="toConfirmOrder">去支付</div>
     </div>
   </div>
@@ -68,13 +68,14 @@ export default {
       title:'购物车',
       back:true,
       current:2,
-      scroll:'',
+      scroll: null,
       cartGoodsList:[],
       selected:true,
       selectedAllButtn:true,
       cartGoods:[],
       buyNumber:1,
       totalMoney:0,
+      elementNode:null,
       swiperOptions: {
         loop: false,
         autoplay:false
@@ -87,7 +88,6 @@ export default {
       cartGoodsListData.forEach(item => {
         item.selected = true;
         this.totalMoney += item.price*item.buyNumber;
-        this.totalMoney = this.totalMoney.toFixed(2)*1;
       });
       this.cartGoodsList = cartGoodsListData;
     },
@@ -101,15 +101,13 @@ export default {
     },
     changeStatus(item){
       item.selected = !item.selected;
-      let price = (item.price*item.buyNumber).toFixed(2)*1;
+      let price = item.price * item.buyNumber * 1;
       if(!item.selected){
         this.totalMoney -= price;
       }else{
         this.totalMoney += price;
       };
-      this.selectedAllButtn = !this.cartGoodsList.some(item => {
-        return item.selected === false
-      })
+      this.selectedAllButtn = !this.cartGoodsList.some(item => !item.selected)
     },
     selectedAll(){
       this.selectedAllButtn = !this.selectedAllButtn;
@@ -118,7 +116,6 @@ export default {
           item.selected = true;
           this.totalMoney += parseFloat(item.price)*item.buyNumber;
         });
-        this.totalMoney = this.totalMoney.toFixed(2)*1;
         this.cartGoodsList.forEach(item => {
           item.selected = true;
         })
@@ -136,24 +133,22 @@ export default {
          })
          return
        }
-      this.totalMoney -= item.price * 1;
-      this.totalMoney = this.totalMoney.toFixed(2)*1;
+      if(item.selected){
+        this.totalMoney -= item.price * 1;
+      }
       let cartGoodsListData = Storage.getItem('cartGoodsList');
-      let indexList = cartGoodsListData.map(val => {
-        return val.id;
-      })
+      let indexList = cartGoodsListData.map(val => val.id)
       item.buyNumber--;
       let index = indexList.indexOf(item.id);
       cartGoodsListData[index].buyNumber = item.buyNumber;
       Storage.setItem('cartGoodsList',cartGoodsListData);
     },
     addNumber(item){
-      this.totalMoney += item.price * 1;
-      this.totalMoney = this.totalMoney.toFixed(2)*1
+      if(item.selected){
+        this.totalMoney += item.price * 1;
+      }
       let cartGoodsListData = Storage.getItem('cartGoodsList');
-      let indexList = cartGoodsListData.map(val => {
-        return val.id;
-      })
+      let indexList = cartGoodsListData.map(val => val.id)
       item.buyNumber++;
       let index = indexList.indexOf(item.id);
       cartGoodsListData[index].buyNumber = item.buyNumber;
@@ -165,30 +160,25 @@ export default {
         btn: {confirm:'删除',cancel:'取消'},
         success: res => {
           if(res.confirm){
-            this.cartGoodsList.splice(index,1)
+            this.cartGoodsList.splice(index,1);
             this.totalMoney = 0;
             this.cartGoodsList.forEach(item => {
               if(item.selected){
-                this.totalMoney += item.price*item.buyNumber;
-                this.totalMoney = this.totalMoney.toFixed(2)*1;
+                this.totalMoney += item.price * item.buyNumber; 
               }
             });
+            this.selectedAllButtn = this.cartGoodsList.some(val => val.selected)
             Storage.setItem('cartGoodsList',this.cartGoodsList);
           }
+          this.elementNode.classList.remove('delete-goods')
         }
       })
     },
     toConfirmOrder(){
-      let goodsListStatus = this.cartGoodsList.map(item => {
-        return item.selected
-      })
-      let skip = goodsListStatus.some(status => {
-        return status
-      })
+      let goodsListStatus = this.cartGoodsList.map(item => item.selected);
+      let skip = goodsListStatus.some(status => status);
       if(skip){
-        let buyGoodsList = this.cartGoodsList.filter(item => {
-          return item.selected
-        });
+        let buyGoodsList = this.cartGoodsList.filter(item => item.selected);
         this.$router.push({
           name:'ConfirmOrder',
           params:{
@@ -208,8 +198,9 @@ export default {
     },
     touchend(){
       const elem = event.currentTarget
+      this.elementNode = elem
       const distance = event.changedTouches[0].clientX - touchStartX
-      if(-distance > 100){
+      if(-distance > 60){
         elem.classList.add('delete-goods')
       }else{
         elem.classList.remove('delete-goods')
@@ -217,7 +208,7 @@ export default {
     },
     initScroll(){
       let unitHeight = parseFloat(document.querySelector('html').style.fontSize);
-      this.$refs.cartGoods.style.height = window.innerHeight - 2*unitHeight + 'px';
+      this.$refs.cartGoods.style.height = window.innerHeight - 2*unitHeight - 1*unitHeight + 'px';
       this.scroll = new this.$BScroll('.cart-goods',{
         scrollY: true,
         click: true,
@@ -402,8 +393,9 @@ export default {
     }
   }
   .pay-right{
-    width:4rem;
-    @include d-flex($justify-c:space-between);
+    width:0;
+    flex:1;
+    @include d-flex($justify-c:flex-end);
     .total-money{
       font-size:.28rem;
       color:#666;
@@ -415,6 +407,7 @@ export default {
     .pay{
       width:1.6rem;
       height:.8rem;
+      margin-left:.4rem;
       color:#fff;
       font-size:.32rem;
       background-color:$color-a;

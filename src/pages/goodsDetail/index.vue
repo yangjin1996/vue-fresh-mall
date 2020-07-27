@@ -104,7 +104,9 @@ export default {
       }
       this.cartGoodsList = list;
       Storage.setItem('cartGoodsList',this.cartGoodsList);
-      alert('添加购物车成功')
+      this.$showModel({
+        showText:"添加购物车成功"
+      })
     },
     initToCartGoods(item){
       const id = item.goods_id;
