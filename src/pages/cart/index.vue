@@ -6,13 +6,19 @@
       <img src="@/assets/images/noGoods.png">
       <h3>你还没有相关订单</h3>
       <p>可以去看看有哪些想买的~</p>
-      <div class="jump">去逛逛</div>
+      <router-link tag="div" class="jump" to="/">去逛逛</router-link>
     </div>
   </div>
-  <div else class="cart-goods" ref="cartGoods">
-    <ul class="goods-container">
-      <li class="goods" v-for="(item,index) of cartGoodsList" :key="index">
-        <div class="select-buttom" @click="changeStatus(item)">
+  <div v-show="cartGoodsListLength" class="cart-goods" ref="cartGoods">
+    <ul class="goods-container" ref = "ul">
+      <li 
+        class="goods" 
+        v-for="(item,index) of cartGoodsList" 
+        :key="index"
+        @touchstart="touchstart()"
+        @touchend="touchend()"
+        @click="toGoodsDetail(item.id)">
+        <div class="select-buttom" @click.stop="changeStatus(item)">
            <span v-show="item.selected" class="iconfont">&#xe627;</span>
         </div>
 				<img class="goods-img" v-lazy="item.img">
@@ -22,14 +28,15 @@
 					<p class="goods-price">￥{{item.price}}</p>
 				</div>
 				<div class="button">
-          <span class="iconfont reduce" @click="reduceNumber(item)">&#xe60c;</span>
+          <span class="iconfont reduce" @click.stop="reduceNumber(item)">&#xe60c;</span>
           <span class="number">{{item.buyNumber}}</span>
-          <span class="iconfont add" @click="addNumber(item)">&#xe626;</span>
+          <span class="iconfont add" @click.stop="addNumber(item)">&#xe626;</span>
         </div>
+        <div class="delete" @click.stop="deleteGoods(index)">删除</div>
 			</li>
     </ul>
   </div>
-  <div class="pay-container" v-show="selected">
+  <div class="pay-container" v-show="cartGoodsList.length && selected">
     <div class="pay-left">
       <div class="select-buttom" @click="selectedAll">
         <span v-show="selectedAllButtn" class="iconfont">&#xe627;</span>
@@ -39,7 +46,7 @@
     <div class="pay-right">
       <span class="total-money">合计：</span>
       <span class="money">￥{{totalMoney}}元</span>
-      <div class="pay">去支付</div>
+      <div class="pay" @click="toConfirmOrder">去支付</div>
     </div>
   </div>
   <common-footer :current="current"></common-footer>
@@ -48,8 +55,9 @@
 
 <script>
 import { Storage } from'@/utils/storage.js';
-import CommonHeader from '@/components/Header'
-import CommonFooter from '@/components/Footer'
+import CommonHeader from '@/components/Header';
+import CommonFooter from '@/components/Footer';
+let touchStartX;
 export default {
   components:{
     CommonHeader,
@@ -66,37 +74,34 @@ export default {
       selectedAllButtn:true,
       cartGoods:[],
       buyNumber:1,
-      totalMoney:0
+      totalMoney:0,
+      swiperOptions: {
+        loop: false,
+        autoplay:false
+      },
     }
   },
-  mounted() {
-    this.getCartGoodsList();
-    let Height = this.getHeight();
-    this.$refs.cartGoods.style.height = window.innerHeight - 2*Height + 'px';
-    this.scroll = new this.$BScroll('.cart-goods',{
-      scrollY: true,
-      click: true,
-      probeType: 3,
-    });
-  },
   methods: {
-    getHeight(){
-      const html = document.querySelector('html');
-      const fontSize = window.innerWidth / 7.5;
-      html.style.fontSize = fontSize + 'px';
-      return fontSize;
-    },
     getCartGoodsList(){
       let cartGoodsListData = Storage.getItem('cartGoodsList');
       cartGoodsListData.forEach(item => {
         item.selected = true;
-        this.totalMoney += (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
+        this.totalMoney += item.price*item.buyNumber;
+        this.totalMoney = this.totalMoney.toFixed(2)*1;
       });
       this.cartGoodsList = cartGoodsListData;
     },
+    toGoodsDetail(goods_id){
+      this.$router.push({
+        path:'/goods-detail',
+        query:{
+          goods_id
+        }
+      })
+    },
     changeStatus(item){
       item.selected = !item.selected;
-      let price = (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
+      let price = (item.price*item.buyNumber).toFixed(2)*1;
       if(!item.selected){
         this.totalMoney -= price;
       }else{
@@ -113,7 +118,7 @@ export default {
           item.selected = true;
           this.totalMoney += parseFloat(item.price)*item.buyNumber;
         });
-        this.totalMoney = this.totalMoney.toString().toFixed(2)*1;
+        this.totalMoney = this.totalMoney.toFixed(2)*1;
         this.cartGoodsList.forEach(item => {
           item.selected = true;
         })
@@ -124,26 +129,124 @@ export default {
         })
       }
     },
-     reduceNumber(item){
+    reduceNumber(item){
        if(item.buyNumber === 1){
+         this.$showModel({
+           showText:'不能再减了哦~'
+         })
          return
        }
-      item.buyNumber -= 1;
-      this.totalMoney -= (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
-     },
-     addNumber(item){
-       item.buyNumber += 1;
-       this.totalMoney += (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
-     }
+      this.totalMoney -= item.price * 1;
+      this.totalMoney = this.totalMoney.toFixed(2)*1;
+      let cartGoodsListData = Storage.getItem('cartGoodsList');
+      let indexList = cartGoodsListData.map(val => {
+        return val.id;
+      })
+      item.buyNumber--;
+      let index = indexList.indexOf(item.id);
+      cartGoodsListData[index].buyNumber = item.buyNumber;
+      Storage.setItem('cartGoodsList',cartGoodsListData);
+    },
+    addNumber(item){
+      this.totalMoney += item.price * 1;
+      this.totalMoney = this.totalMoney.toFixed(2)*1
+      let cartGoodsListData = Storage.getItem('cartGoodsList');
+      let indexList = cartGoodsListData.map(val => {
+        return val.id;
+      })
+      item.buyNumber++;
+      let index = indexList.indexOf(item.id);
+      cartGoodsListData[index].buyNumber = item.buyNumber;
+      Storage.setItem('cartGoodsList',cartGoodsListData);
+    },
+    deleteGoods(index){
+      this.$showModel({
+        title : '您确定要删除该商品？',
+        btn: {confirm:'删除',cancel:'取消'},
+        success: res => {
+          if(res.confirm){
+            this.cartGoodsList.splice(index,1)
+            this.totalMoney = 0;
+            this.cartGoodsList.forEach(item => {
+              if(item.selected){
+                this.totalMoney += item.price*item.buyNumber;
+                this.totalMoney = this.totalMoney.toFixed(2)*1;
+              }
+            });
+            Storage.setItem('cartGoodsList',this.cartGoodsList);
+          }
+        }
+      })
+    },
+    toConfirmOrder(){
+      let goodsListStatus = this.cartGoodsList.map(item => {
+        return item.selected
+      })
+      let skip = goodsListStatus.some(status => {
+        return status
+      })
+      if(skip){
+        let buyGoodsList = this.cartGoodsList.filter(item => {
+          return item.selected
+        });
+        this.$router.push({
+          name:'ConfirmOrder',
+          params:{
+            cartGoodsList:buyGoodsList,
+            totalMoney:this.totalMoney,
+            goodsNum:buyGoodsList.length,
+          }
+        })
+      }else{
+        this.$showModel({
+          showText:'您还没有选择商品哦~'
+        })
+      }
+    },
+    touchstart(){
+      touchStartX = event.targetTouches[0].clientX
+    },
+    touchend(){
+      const elem = event.currentTarget
+      const distance = event.changedTouches[0].clientX - touchStartX
+      if(-distance > 100){
+        elem.classList.add('delete-goods')
+      }else{
+        elem.classList.remove('delete-goods')
+      }
+    },
+    initScroll(){
+      let unitHeight = parseFloat(document.querySelector('html').style.fontSize);
+      this.$refs.cartGoods.style.height = window.innerHeight - 2*unitHeight + 'px';
+      this.scroll = new this.$BScroll('.cart-goods',{
+        scrollY: true,
+        click: true,
+        probeType: 3,
+      });
+    }
+  },
+  computed:{
+    cartGoodsListLength(){
+      return !!this.cartGoodsList.length;
+    }
+  },
+  mounted() {
+    this.getCartGoodsList();
+    this.initScroll();
   },
 }
 </script>
 
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
+.wrap{
+  padding-top:.8rem;
+  height:100vh;
+  box-sizing:border-box;
+}
 .wrap-container{
   width:100vw;
-  height:100vh;
+  height:100%;
   background-color:#fff;
   .container{
     width:3rem;
@@ -184,23 +287,21 @@ export default {
   width:100%;
   height:100%;
   background-color:#f5f5f5;
-  padding-top:.8rem;
   box-sizing:border-box;
   .goods-container{
-    width:100%;
-    padding:.2rem;
-    padding-top:1rem;
-    box-sizing:border-box;
+    margin:.2rem;
+    overflow: hidden;
     .goods{
 			width:100%;
-			height:3.1rem;
+      height:3.1rem;
 			margin-bottom:.2rem;
-			padding:.45rem .2rem;
+      padding:.45rem .2rem;
+      transition: all .5s;
 			box-sizing:border-box;
 			background-color:#fff;
 			display:flex;
       align-items:center;
-			position:relative;
+			position: relative;
 			.goods-info{
 				width:3.35rem;
         height:100%;
@@ -266,12 +367,24 @@ export default {
 				width:2.15rem;
 				height:2.15rem;
 				border-radius:.1rem;
-			}
+      }
+      .delete{
+        width:1.2rem;
+        height:100%;
+        font-size:.28rem;
+        color:#fff;
+        background-color: $color-a;
+        @include d-flex;
+        position: absolute;
+        right:-1.2rem;
+        top:0;
+        z-index: 0;
+      }
 		}
   }
 }
 .pay-container{
-  width:100%;
+  width:100vw;
   height:1rem;
   background-color:#fff;
   padding:.1rem .2rem;
@@ -310,7 +423,6 @@ export default {
     }
   }
 }
-
 .select-buttom{
   width:.4rem;
   height:.4rem;
@@ -323,5 +435,9 @@ export default {
     font-size:.38rem;
     color:$color-a;
   }
+}
+.delete-goods{
+  transform: translateX(-1.2rem);
+  transition: all .5s;
 }
 </style>

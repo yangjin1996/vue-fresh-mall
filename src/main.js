@@ -6,7 +6,8 @@ import VueLazyload from 'vue-lazyload';
 import router from './router';
 import store from './store';
 import BScroll from 'better-scroll';
-// import Mask from './components/Modal/index.js';
+import Model from './components/Model/index';
+
 //?
 if(process.env.NODE_ENV === "development") {
   axios.defaults.baseURL = 'http://api.4yue.top/index.php/';
@@ -30,6 +31,7 @@ Vue.config.productionTip = false
 Vue.use(VueLazyload, {
   loading: 'images/loading-bubbles.svg',
 })
+Vue.use(Model)
 
 new Vue({
   router,

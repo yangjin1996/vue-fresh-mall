@@ -1,0 +1,113 @@
+<template>
+<transition name="fade">
+  <div class="mask" v-if="visible" @click="cancel">
+    <div class="content" v-if="selectSrc">
+      <div class="title">{{title}}</div>
+      <div class="select">
+        <div class="left-container" v-if="visible" @click.stop="cancelEv">{{btn.cancel}}</div>
+        <div class="right-container" v-if="visible" @click.stop="confirmEv">{{btn.confirm}}</div>
+      </div>
+    </div>
+    <div class="show" v-else >{{showText}}</div>
+  </div>
+</transition>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      visible:false,
+      selectSrc:false,
+      showText:'',
+      title:'',
+      btn:{
+        confirm:'',
+        cancel:''
+      }
+    }
+  },
+  methods: {
+    confirmEv(){
+      this.visible = false
+      const result = {
+        confirm:true,
+        cancel:false
+      }
+      this.$emit('model',result)
+    },
+    cancelEv(){
+      this.visible = false
+      const result = {
+        confirm:false,
+        cancel:true
+      }
+      this.$emit('model',result)
+    },
+    cancel(){
+      this.visible = false
+    }
+  },
+}
+</script>
+<style lang='scss' scoped>
+
+@import '~@/assets/scss/global';
+.fade-enter-active,
+.fade-leave-active{ 
+  opacity: 1;
+  transition: opacity .5s;
+}
+.fade-enter,
+.fade-leave-to{
+  opacity: 0;
+}
+.mask{
+  width:100%;
+  height:100%;
+  background-color: rgba($color: #000000, $alpha: .2);
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: 10001;
+  @include d-flex;
+  .content{
+    width:3.5rem;
+    height:1.8rem;
+    border-radius: .1rem;
+    background-color: #fff;
+    .title{
+      height:1rem;
+      font-size:.3rem;
+      font-weight: bold;
+      border-bottom:1px solid #ccc;
+      text-align:center;
+      box-sizing: border-box;
+      @include d-flex;
+    }
+    .select{
+      @include d-flex($justify-c:space-between);
+      .left-container,.right-container{
+        width:50%;
+        height:.8rem;
+        font-size:.28rem;
+        color:$color-a;
+        @include d-flex;
+      }
+      .left-container{
+        color:#ccc;
+        border-right:1px solid #ccc;
+        box-sizing: border-box;
+      }
+    }
+  }
+  .show{
+    width:3.5rem;
+    height:1rem;
+    color:#fff;
+    border-radius: .1rem;
+    background-color: rgba($color: #000000, $alpha: .5);
+    @include d-flex;
+  }
+}
+</style>

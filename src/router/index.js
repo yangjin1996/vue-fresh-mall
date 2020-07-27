@@ -6,6 +6,8 @@ import GoodsDetail from '../pages/goodsDetail/index.vue'
 import Cart from '../pages/cart/index.vue'
 import User from '../pages/user/index.vue'
 import Category from '../pages/category/index.vue'
+import Message from '../pages/message/index.vue'
+import ConfirmOrder from '../pages/confirmOrder/index.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +41,16 @@ Vue.use(VueRouter)
     path: '/category',
     name: 'Category',
     component: Category
+  },
+  {
+    path: '/message',
+    name: 'Message',
+    component: Message
+  },
+  {
+    path: '/confirm-order',
+    name: 'ConfirmOrder',
+    component: ConfirmOrder
   },
 ]
 

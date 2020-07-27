@@ -56,10 +56,17 @@ export default {
       }else{
         item.buyNumber = this.buyNumber;
         list = goodsList;
-        list.push(item);
+        list.unshift(item);
       }
       this.cartGoodsList = list;
       Storage.setItem('cartGoodsList',this.cartGoodsList);
+      // this.$showModel({
+      //   title : '添加购物车成功,是否前往购物车？',
+      //   btn : {confirm:'确定',cancel:'取消'},
+      //   success:res => {
+      //     console.log(res)
+      //   }
+      // })
     },
   },
 }
