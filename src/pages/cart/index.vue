@@ -90,13 +90,13 @@ export default {
       let cartGoodsListData = Storage.getItem('cartGoodsList');
       cartGoodsListData.forEach(item => {
         item.selected = true;
-        this.totalMoney += (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+        this.totalMoney += (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
       });
       this.cartGoodsList = cartGoodsListData;
     },
     changeStatus(item){
       item.selected = !item.selected;
-      let price = (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+      let price = (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
       if(!item.selected){
         this.totalMoney -= price;
       }else{
@@ -113,7 +113,7 @@ export default {
           item.selected = true;
           this.totalMoney += parseFloat(item.price)*item.buyNumber;
         });
-        this.totalMoney = this.totalMoney.toFixed(2)*1;
+        this.totalMoney = this.totalMoney.toString().toFixed(2)*1;
         this.cartGoodsList.forEach(item => {
           item.selected = true;
         })
@@ -129,11 +129,11 @@ export default {
          return
        }
       item.buyNumber -= 1;
-      this.totalMoney -= (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+      this.totalMoney -= (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
      },
      addNumber(item){
        item.buyNumber += 1;
-       this.totalMoney += (parseFloat(item.price)*item.buyNumber).toFixed(2)*1;
+       this.totalMoney += (parseFloat(item.price)*item.buyNumber).toString().toFixed(2)*1;
      }
   },
 }
