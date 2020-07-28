@@ -2,12 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../pages/home/index.vue'
 import Search from '../pages/search/index.vue'
-import GoodsDetail from '../pages/goodsDetail/index.vue'
+import GoodsDetail from '../pages/goods-detail/index.vue'
 import Cart from '../pages/cart/index.vue'
 import User from '../pages/user/index.vue'
 import Category from '../pages/category/index.vue'
 import Message from '../pages/message/index.vue'
-import ConfirmOrder from '../pages/confirmOrder/index.vue'
+import ConfirmOrder from '../pages/confirm-order/index.vue'
+import goodsNotfind from '../pages/goods-notfind/index.vue'
 
 Vue.use(VueRouter)
 
@@ -52,6 +53,11 @@ Vue.use(VueRouter)
     name: 'ConfirmOrder',
     component: ConfirmOrder
   },
+  {
+    path: '/goods-notfind',
+    name: 'goodsNotfind',
+    component: goodsNotfind
+  }
 ]
 
 const router = new VueRouter({

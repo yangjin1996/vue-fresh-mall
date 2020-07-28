@@ -73,6 +73,8 @@ export default {
         this.goodsImg = res.data.data.goods.content;
         this.goods = res.data.data.goods;
         this.showLoading = false;
+      }).catch(() => {
+        this.$router.push('/goods-notfind')
       })
     },
     getBuynumber(){

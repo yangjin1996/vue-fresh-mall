@@ -11,6 +11,7 @@ const model = {
         vm.selectSrc = true;
         vm.title = title;
         vm.btn = btn;
+        vm.$off('model');
         vm.$on('model',function(result){
           success && success(result);
         })
