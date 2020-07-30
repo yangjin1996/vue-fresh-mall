@@ -1,6 +1,6 @@
 <template>
 <transition name="fade">
-  <div class="mask" v-if="visible" @click="cancel">
+  <div class="mask" :class="{cover:showMask}" v-if="visible" @click="cancel">
     <div class="content" v-if="selectSrc">
       <div class="title">{{title}}</div>
       <div class="select">
@@ -19,6 +19,7 @@ export default {
     return {
       visible:false,
       selectSrc:false,
+      showMask:false,
       showText:'',
       title:'',
       btn:{
@@ -104,9 +105,13 @@ export default {
     height:1rem;
     font-size:.26rem;
     color:#fff;
+    text-align: center;
     border-radius: .1rem;
     background-color: rgba($color: #000000, $alpha: .7);
     @include d-flex;
   }
+}
+.cover{
+  background-color: rgba($color: #000000, $alpha: 0);
 }
 </style>

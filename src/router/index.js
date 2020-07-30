@@ -9,6 +9,8 @@ import Category from '../pages/category/index.vue'
 import Message from '../pages/message/index.vue'
 import ConfirmOrder from '../pages/confirm-order/index.vue'
 import goodsNotfind from '../pages/goods-notfind/index.vue'
+import Login from '../pages/login/index.vue'
+import Register from '../pages/register/index.vue'
 
 Vue.use(VueRouter)
 
@@ -57,7 +59,17 @@ Vue.use(VueRouter)
     path: '/goods-notfind',
     name: 'goodsNotfind',
     component: goodsNotfind
-  }
+  },
+  {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },
 ]
 
 const router = new VueRouter({

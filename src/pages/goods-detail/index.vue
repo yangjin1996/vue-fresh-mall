@@ -23,7 +23,7 @@
   </div>
   <div class="user-option">
     <p class="option add-cart" @click="addCart(goods)">加入购物车</p>
-    <p class="option buy-goods">立即购买</p>
+    <p class="option buy-goods" @click="buyGoods">立即购买</p>
   </div>
   <loadings :showLoading="showLoading"></loadings>
 </div>
@@ -31,6 +31,7 @@
 
 <script>
 import { Storage } from'@/utils/storage.js';
+import { Token } from'@/utils/token.js';
 import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from '@/components/Header'
 import GoodsSwiper from './goodsSwiper'
@@ -109,6 +110,28 @@ export default {
       this.$showModel({
         showText:"添加购物车成功"
       })
+    },
+    buyGoods(){
+      const token = Token.getToken('token')
+      if(token === ''){
+        this.$router.push({
+          name:'Login',
+          params:'/goods-detail'
+        })
+      }else{
+        this.goods = this.initToCartGoods(this.goods);
+        this.goods.buyNumber = this.buyNumber;
+        let Money = this.buyNumber * this.goods.price;
+        Money = Money.toFixed(2) * 1;
+        this.$router.push({
+          name:'ConfirmOrder',
+          params:{
+            cartGoodsList:[this.goods],
+            totalMoney:Money,
+            goodsNum:this.goods.buyNumber,
+          }
+        })
+      }
     },
     initToCartGoods(item){
       const id = item.goods_id;
