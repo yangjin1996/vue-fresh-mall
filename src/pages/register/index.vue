@@ -109,14 +109,20 @@ export default {
       }
       return
     },
-    register(){
+    async register(){
       const data = {
         username:this.Name,
         password:this.Password,
         confirmPwd:this.confirmPwd,
         nickname:this.nickname
       }
-      this.axios.post(`shose/user/register`,data).then(() => {
+      this.$showLoading(true,true)
+      await this.axios.post(`shose/user/register`,data).then(() => {
+        this.$showLoading()
+        this.$showModel({
+          showText:'注册成功',
+          showMask:true
+        })
         this.$router.push('/login')
       }).catch(err => {
         console.log(err)

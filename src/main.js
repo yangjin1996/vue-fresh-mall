@@ -7,6 +7,7 @@ import router from './router';
 import store from './store';
 import BScroll from 'better-scroll';
 import Model from './components/Model/index';
+import Loading from './components/Loading/index';
 
 //?
 if(process.env.NODE_ENV === "development") {
@@ -32,6 +33,7 @@ Vue.use(VueLazyload, {
   loading: 'images/loading-bubbles.svg',
 })
 Vue.use(Model)
+Vue.use(Loading)
 
 new Vue({
   router,

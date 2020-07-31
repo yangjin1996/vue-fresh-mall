@@ -15,13 +15,11 @@
     </div>
   </div>
   <the-footer :current="current"></the-footer>
-  <loadings :showLoading="showLoading"></loadings>
 </div>
 </template>
 
 <script>
 
-import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from'@/components/Header';
 import SearchBar from'@/components/SearchBar';
 import HomeSwiper from'./Swiper';
@@ -31,7 +29,6 @@ import TheFooter from'@/components/Footer';
 import { Storage } from'@/utils/storage';
 export default {
   components:{
-    Loadings,
     CommonHeader,
     SearchBar,
     HomeSwiper,
@@ -45,12 +42,11 @@ export default {
       current:1,
       pullDown:false,
       pullingUp:true,
-      showLoading:true,
       swiperList:[],
       navList:[],
       goodsList:[
-        {img:"@/components/loading-bubbles.svg"},
-        {img:"@/components/loading-bubbles.svg"},
+        {img:"@/assets/images/loading.gif"},
+        {img:"@/assets/images/loading.gif"},
       ],
       scroll:null,
       page:1,
@@ -58,7 +54,7 @@ export default {
     }
   },
   created() {
-    this.showLoading = true;
+    this.$showLoading(true)
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
@@ -114,7 +110,7 @@ export default {
             this.scroll.refresh();
           }, 50)
         }
-        this.showLoading = false;
+        this.$showLoading()
       });
     },
   },

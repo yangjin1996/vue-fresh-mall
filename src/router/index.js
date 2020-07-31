@@ -11,6 +11,7 @@ import ConfirmOrder from '../pages/confirm-order/index.vue'
 import goodsNotfind from '../pages/goods-notfind/index.vue'
 import Login from '../pages/login/index.vue'
 import Register from '../pages/register/index.vue'
+import {Token} from '../utils/token'
 
 Vue.use(VueRouter)
 
@@ -78,6 +79,19 @@ const router = new VueRouter({
   routes
 })
 
-
-
+//登陆验证
+const AUTH_ROUTER_NAME = ['ConfirmOrder','User']
+router.beforeEach((to,from,next) => {
+  if(AUTH_ROUTER_NAME.includes(to.name)){
+    const token = Token.getToken('token')
+    if(token === ''){
+      const url = from.path
+      next(`/login?url=${url}`)
+    }else{
+      next()
+    }
+  }else{
+    next()
+  }
+})
 export default router

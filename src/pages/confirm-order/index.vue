@@ -69,9 +69,9 @@ export default {
   },
   methods:{
     getGoodsList(){
-      this.goodsList = this.$route.params.cartGoodsList;
-      this.totalMoney = this.$route.params.totalMoney;
-      this.goodsNum = this.$route.params.goodsNum;
+      this.goodsList = this.$route.query.cartGoodsList;
+      this.totalMoney = this.$route.query.totalMoney;
+      this.goodsNum = this.$route.query.goodsNum;
     }
   }
 }

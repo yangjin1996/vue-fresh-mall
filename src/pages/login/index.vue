@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="login" @click="login">登陆</div>
-  <router-link tag="div" to="/register" class="to-register">免费注册</router-link>
+  <router-link tag="div" :to="'/register?url=' + loginRedirecte" class="to-register">免费注册</router-link>
 </div>
 
 </template>
@@ -71,18 +71,19 @@ export default {
       }
       return
     },
-    login(){
+    async login(){
       const data = {
         username:this.Name,
         password:this.Password
       }
-      //添加loding动画
-      this.axios.post('shose/user/login',data).then(res => {
+      this.$showLoading(true)
+      await this.axios.post('shose/user/login',data).then(res => {
         if(res.data.error_msg === 'ok'){
           res.data.error_msg = '登陆成功';
           const token = res.data.data.token
           Token.setToken(token,1)
           this.$router.push(this.loginRedirecte)
+          this.$showLoading()
         }
         this.$showModel({
           showText:res.data.error_msg,

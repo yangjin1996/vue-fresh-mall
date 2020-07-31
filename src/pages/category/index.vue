@@ -28,17 +28,14 @@
       </ul>
     </div>
   </div>
-  <loadings :showLoading="showLoading"></loadings>
 </div>
 </template>
 
 <script>
 import { Storage } from'@/utils/storage';
-import Loadings from '@/components/Loading/Loadings'
 import CommonHeader from'@/components/Header';
 export default {
   components:{
-    Loadings,
     CommonHeader
   },
   data() {
@@ -46,12 +43,14 @@ export default {
       title:'商品分类',
       back:true,
       backUrl:'',
-      showLoading:true,
       navList:[],
       currentCatId:0,
       goodsList:[]
     }
   },
+  // created() {
+  //   this.$showLoading(true)
+  // },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.backUrl = from.path;
@@ -59,32 +58,32 @@ export default {
   },
   methods: {
     async getCatgoryGoods(){
-      this.showLoading = true;
+      this.$showLoading(true)
       const nav = Storage.getItem('navList');
       if(nav.length === 0){
         const navList = await this.axios.get('api/navigate?type=2');
         this.navList = navList.data.data;
         Storage.setItem('navList',this.navList);
-        this.showLoading = false;
+        this.$showLoading()
       }else{
         this.navList = nav;
-        this.showLoading = false;
+        this.$showLoading()
       }
     },
     async switchBtn(cat_id){
       //一级分类，二级分类（携带cat_id参数
-      this.showLoading = true;
+      this.$showLoading(true)
       this.currentCatId = cat_id;
       const goods = Storage.getItem(`categorygoodsList${cat_id}`);
       if(goods.length === 0){
         await this.axios.get(`api/goods_list?type=2&cat_id=${cat_id}`).then(res => {
           this.goodsList = res.data.data.goods;
           Storage.setItem(`categorygoodsList${cat_id}`,this.goodsList);
-          this.showLoading = false;
+          this.$showLoading()
         })
       }else{
         this.goodsList = goods;
-        this.showLoading = false;
+        this.$showLoading()
       }
     },
     toGoodsDetail(goods_id){
@@ -97,6 +96,7 @@ export default {
     },
   },
   mounted() {
+    this.$showLoading(true)
     this.switchBtn(this.$route.query.cat_id);
     this.currentCatId = this.$route.query.cat_id * 1;
     this.getCatgoryGoods();
@@ -112,6 +112,7 @@ export default {
         threshold: 40, 
       },
     });
+    this.$showLoading()
   },
 }
 </script>

@@ -24,32 +24,25 @@
   <div class="user-option">
     <p class="option add-cart" @click="addCart(goods)">加入购物车</p>
     <p class="option buy-goods" @click="buyGoods">立即购买</p>
-  </div>
-  <loadings :showLoading="showLoading"></loadings>
+  </div>;
 </div>
 </template>
 
 <script>
 import { Storage } from'@/utils/storage.js';
-import { Token } from'@/utils/token.js';
-import Loadings from '@/components/Loading/Loadings'
-import CommonHeader from '@/components/Header'
-import GoodsSwiper from './goodsSwiper'
+import CommonHeader from '@/components/Header';
+import GoodsSwiper from './goodsSwiper';
 export default {
   components:{
-    Loadings,
     CommonHeader,
     GoodsSwiper
   },
   data() {
     return {
-      showLoading:true,
       title:'商品详情',
       backUrl:'/',
       back:true,
-      goodsSwiperList:[
-        '@/assets/images/loading-bubbles.svg',
-      ],
+      goodsSwiperList:[],
       cartGoodsList:[],
       goods:{},
       goods_id:0,
@@ -62,6 +55,7 @@ export default {
     })
   },
   mounted() {
+    this.$showLoading(true);
     this.getGoodsDetail();
     this.getBuynumber();
   },
@@ -73,7 +67,7 @@ export default {
         this.goodsSwiperList = res.data.data.gallery;
         this.goodsImg = res.data.data.goods.content;
         this.goods = res.data.data.goods;
-        this.showLoading = false;
+        this.$showLoading();
       }).catch(() => {
         this.$router.push('/goods-notfind')
       })
@@ -112,26 +106,18 @@ export default {
       })
     },
     buyGoods(){
-      const token = Token.getToken('token')
-      if(token === ''){
-        this.$router.push({
-          name:'Login',
-          params:'/goods-detail'
-        })
-      }else{
-        this.goods = this.initToCartGoods(this.goods);
-        this.goods.buyNumber = this.buyNumber;
-        let Money = this.buyNumber * this.goods.price;
-        Money = Money.toFixed(2) * 1;
-        this.$router.push({
-          name:'ConfirmOrder',
-          params:{
-            cartGoodsList:[this.goods],
-            totalMoney:Money,
-            goodsNum:this.goods.buyNumber,
-          }
-        })
-      }
+      this.goods = this.initToCartGoods(this.goods);
+      this.goods.buyNumber = this.buyNumber;
+      let Money = this.buyNumber * this.goods.price;
+      Money = Money.toFixed(2) * 1;
+      this.$router.push({
+        path:'/confirm-order',
+        query:{
+          cartGoodsList:[this.goods],
+          totalMoney:Money,
+          goodsNum:this.goods.buyNumber,
+        }
+      })
     },
     initToCartGoods(item){
       const id = item.goods_id;
