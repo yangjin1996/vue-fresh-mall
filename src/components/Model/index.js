@@ -7,7 +7,7 @@ const model = {
     document.body.appendChild(vm.$el)
     //弹窗插件共有5个参数 showMask控制弹窗遮罩层的显示与消失，弹窗分为两种类型，
     // 第一种类型为选择模式（有title，btn，success三个参数,success为点击确定之后执行的回调函数）
-    // 第二种为提示弹窗，提示某种操作成功，2s后自动消失
+    // 第二种为提示弹窗，提示某种操作，2s后自动消失
     Vue.prototype.$showModel = function({showMask=false,title = '',btn = {confirm:'',cancel:''},success = null,showText = '',}){
       if(btn.confirm !== '' && btn.cancel !== ''){
         vm.visible = true;

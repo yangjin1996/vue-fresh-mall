@@ -179,17 +179,18 @@ export default {
       let skip = goodsListStatus.some(status => status);
       if(skip){
         let buyGoodsList = this.cartGoodsList.filter(item => item.selected);
+        Storage.setItem('confirm-order',{
+          cartGoodsList:buyGoodsList,
+          totalMoney:this.totalMoney,
+          goodsNum:buyGoodsList.length
+        })
         this.$router.push({
-          name:'ConfirmOrder',
-          params:{
-            cartGoodsList:buyGoodsList,
-            totalMoney:this.totalMoney,
-            goodsNum:buyGoodsList.length,
-          }
+          path:'/confirm-order',
         })
       }else{
         this.$showModel({
-          showText:'您还没有选择商品哦~'
+          showText:'您还没有选择商品哦~',
+          showMask:true
         })
       }
     },

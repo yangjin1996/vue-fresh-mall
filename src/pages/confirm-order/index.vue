@@ -2,14 +2,18 @@
 <div class='wrap'>
   <common-header :title="title" :back="back" :backUrl="backUrl"></common-header>
   <div class="wrpper-container">
-    <div class="address-container">
+    <router-link tag="div" class="address-container" to="/user-address">
       <span class="iconfont address-icon">&#xe614;</span>
-      <div class="address">
-        <div class="user-msg">小进进 13333333333</div>
-        <div class="detail-address">湖南省长沙市天心区鑫远悦城5栋28栋305室XXXXXXXX</div>
+      <div class="address" v-if="Object.keys(this.address).length">
+        <div class="user-msg">{{address.name}}</div>
+        <div class="phone">{{address.phone}}</div>
+        <div class="detail-address">{{address.province+address.city+address.area+address.address}}</div>
+      </div>
+      <div v-else class="add-address">
+        请选择收货地址
       </div>
       <span class="iconfont">&#xe60e;</span>
-    </div>
+    </router-link>
     <div class="goods-container" ref="goodsContainer">
       <ul class="container-box">
         <li class="goods" v-for="item of goodsList" :key="item.id">
@@ -23,7 +27,7 @@
         </li>
         <li class="border-bottom money-info box">
           <span>商品金额</span>
-          <span class="total-money">￥{{totalMoney}}</span>
+          <span class="total-money">￥{{totalMoney.toFixed(2)}}</span>
         </li>
         <li class="border-bottom number-info box">
           <span>商品数量</span>
@@ -34,7 +38,7 @@
   </div>
   <div class="buy-goods boorder-top">
     <div class="sum">
-      总金额：<span class="sum-num">￥{{totalMoney}}</span>
+      总金额：<span class="sum-num">￥{{totalMoney.toFixed(2)}}</span>
     </div>
     <div class="sum-btn">立即购买</div>
   </div>
@@ -43,6 +47,9 @@
 
 <script>
 import CommonHeader from '@/components/Header';
+import { Storage } from'@/utils/storage.js';
+import {Token} from '@/utils/token';
+const USER_TOKEN = Token.getToken()
 export default {
   components:{
     CommonHeader
@@ -52,12 +59,20 @@ export default {
       title:'确认订单',
       back:true,
       backUrl:"/cart",
+      address:{},
       goodsList:[],
       totalMoney:0,
       goodsNum:0
     }
   },
+  computed: {
+    // addressDefault(){
+    //   return this.address.length
+    // }
+  },
   mounted(){
+    this.$showLoading(true);
+    this.getUserAddress();
     this.getGoodsList();
     let unitHeight = parseFloat(document.querySelector('html').style.fontSize);
     this.$refs.goodsContainer.style.height = window.innerHeight - (0.8 + 0.4 + 2.15 + 1)*unitHeight + 'px';
@@ -68,10 +83,20 @@ export default {
     });
   },
   methods:{
+    async getUserAddress(){
+      const address = await this.axios.get('shose/address/default?type=2',{
+        headers:{
+          token:USER_TOKEN
+        }
+      });
+      this.address = address.data.data || {}
+      this.$showLoading();
+    },
     getGoodsList(){
-      this.goodsList = this.$route.query.cartGoodsList;
-      this.totalMoney = this.$route.query.totalMoney;
-      this.goodsNum = this.$route.query.goodsNum;
+      let data = Storage.getItem('confirm-order')
+      this.goodsList = data.cartGoodsList;
+      this.totalMoney = data.totalMoney;
+      this.goodsNum = data.goodsNum;
     }
   }
 }
@@ -100,7 +125,6 @@ export default {
         flex:1;
         height:100%;
         margin-left:.35rem;
-        display: flex;
         @include d-flex($flex-d:column,$justify-c:space-between,$aligin-i:flex-start);
         .user-msg{
           font-size:.32rem;
@@ -111,6 +135,15 @@ export default {
           font-size:.28rem;
           color:$color-s;
         }
+      }
+      .add-address{
+        display: flex;
+        width: 0;
+        flex: 1;
+        margin-left:.32rem;
+        font-size: .32rem;
+        color:#2b2b2b;
+        font-weight: bold;
       }
       .address-icon{
         color:#26b0fa;

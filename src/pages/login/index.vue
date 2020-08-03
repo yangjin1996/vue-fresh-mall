@@ -39,8 +39,7 @@ export default {
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.backUrl = from.path
-      vm.loginRedirecte = from.fullPath
-      console.log(from)
+      vm.loginRedirecte = to.query.url
     })
   },
   methods: {

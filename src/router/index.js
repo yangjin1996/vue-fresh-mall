@@ -11,6 +11,8 @@ import ConfirmOrder from '../pages/confirm-order/index.vue'
 import goodsNotfind from '../pages/goods-notfind/index.vue'
 import Login from '../pages/login/index.vue'
 import Register from '../pages/register/index.vue'
+import UserAddress from '../pages/user-address/index.vue'
+import AddAddress from '../pages/add-address/index.vue'
 import {Token} from '../utils/token'
 
 Vue.use(VueRouter)
@@ -71,6 +73,16 @@ Vue.use(VueRouter)
       name: 'Register',
       component: Register
     },
+    {
+      path: '/user-address',
+      name: 'UserAddress',
+      component: UserAddress
+    },
+    {
+      path: '/add-address',
+      name: 'AddAddress',
+      component: AddAddress
+    },
 ]
 
 const router = new VueRouter({
@@ -85,7 +97,7 @@ router.beforeEach((to,from,next) => {
   if(AUTH_ROUTER_NAME.includes(to.name)){
     const token = Token.getToken('token')
     if(token === ''){
-      const url = from.path
+      const url = to.path
       next(`/login?url=${url}`)
     }else{
       next()
