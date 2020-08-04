@@ -1,7 +1,7 @@
 <template>
 <div class="wrap">
   <common-header :backUrl="backUrl" :back="back" :title="title"></common-header>
-  <user-address></user-address>
+  <user-address :addressList="addressList"></user-address>
   <router-link tag="div" to="/add-address" class="add-address" v-if="showAddAddress">
     <span class="iconfont">&#xe626; </span>添加新地址
   </router-link>
@@ -33,14 +33,10 @@ export default {
     })
   },
   mounted() {
+    this.$showLoading(true);
     this.getUserAddress();
+    this.showAddAddress = this.addressList.length <= 10 ? true : false
   },
-  // computed: {
-  //   addressNum(){
-  //     this.showAddAddress = this.address.length <= 10 ? true : false
-  //     return this.address.length
-  //   }
-  // },
   methods: {
     async getUserAddress(){
       await this.axios.get('shose/address?type=2',{
@@ -48,16 +44,18 @@ export default {
           token:USER_TOKEN
         }
       }).then(res => {
-        this.addressList = res.data.data.address
+        this.addressList = res.data.data.address;
+        this.$showLoading();
       })
-    }
+    },
+    
   },
 }
 </script>
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
 .wrap{
-  padding-top:1rem;
+  padding-top:.8rem;
   box-sizing: border-box;
   .add-address{
     width:100%;

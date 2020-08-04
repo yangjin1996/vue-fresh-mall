@@ -129,6 +129,7 @@ export default {
     reduceNumber(item){
        if(item.buyNumber === 1){
          this.$showModel({
+           showMask:true,
            showText:'不能再减了哦~'
          })
          return

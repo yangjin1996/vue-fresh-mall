@@ -11,7 +11,7 @@
     <div class="cell">
       <span>选择地区:</span>
       <div class="input choose-add" @click="showChooseAddress = true">
-        <span class="iconfont">{{province+' '+city+' '+area || '省市区'}} &#xe60e;</span>
+        <span class="iconfont">{{province+' '+city+' '+area ? province+' '+city+' '+area : '省市区'}} &#xe60e;</span>
       </div>
     </div>
     <div class="cell">

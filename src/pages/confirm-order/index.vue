@@ -40,7 +40,7 @@
     <div class="sum">
       总金额：<span class="sum-num">￥{{totalMoney.toFixed(2)}}</span>
     </div>
-    <div class="sum-btn">立即购买</div>
+    <div class="sum-btn" @click="submmitOrder">立即购买</div>
   </div>
 </div>
 </template>
@@ -60,19 +60,25 @@ export default {
       back:true,
       backUrl:"/cart",
       address:{},
+      AddressId:0,
       goodsList:[],
       totalMoney:0,
       goodsNum:0
     }
   },
-  computed: {
-    // addressDefault(){
-    //   return this.address.length
-    // }
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if(Object.keys(to.params).length !== 0){
+        vm.address = to.params
+        vm.$showLoading();
+      }else{
+        vm.getUserAddress();
+      }
+    })
+    
   },
   mounted(){
     this.$showLoading(true);
-    this.getUserAddress();
     this.getGoodsList();
     let unitHeight = parseFloat(document.querySelector('html').style.fontSize);
     this.$refs.goodsContainer.style.height = window.innerHeight - (0.8 + 0.4 + 2.15 + 1)*unitHeight + 'px';
@@ -97,6 +103,71 @@ export default {
       this.goodsList = data.cartGoodsList;
       this.totalMoney = data.totalMoney;
       this.goodsNum = data.goodsNum;
+    },
+    async submmitOrder(){
+      if(USER_TOKEN === ''){
+        this.$router.push({
+          path:'/login'
+        })
+        return
+      }
+      if(Object.keys(this.address).length === 0){
+        this.$showModel({
+          showMask:true,
+          showText:'请选择地址'
+        })
+        return
+      }
+      if(this.goodsList.length === 0){
+        this.$showModel({
+          showMask:true,
+          showText:'请选择商品'
+        })
+        return
+      }
+      let data = {};
+      data.goods = [];
+      data.address_id = this.address.id;
+      this.goodsList.forEach(item => {
+        data.goods.push({
+          goods_id:item.id,
+          count:item.buyNumber
+        })
+      });
+      this.$showLoading(true);
+      const res = await this.axios.post('shose/order?type=2',data,{
+        headers:{
+          token:USER_TOKEN
+        }
+      }).finally(() => {
+        this.$showLoading(false)
+      })
+      console.log(res)
+      let deleteCartGoods = Storage.getItem('cartGoodsList')
+      let buyGoods = this.goodsList.map(item => {
+        return item.id
+      })
+      buyGoods.forEach((item,index) => {
+        if(deleteCartGoods.includes(item.id) !== -1){
+          deleteCartGoods.splice(index,1)
+          if(deleteCartGoods.length > 0){
+            Storage.setItem('cartGoodsList',deleteCartGoods)
+          }else{
+            sessionStorage.removeItem('cartGoodsList')
+          }
+        }
+      })
+      if(res.data.data.pass){
+        const data = {
+          orderNo:res.data.data.order_no,
+          total:this.totalMoney,
+          orderId:res.data.data.order_id
+        }
+        this.$router.replace({
+          path:'/order-pay',
+          query:data
+        })
+      }
     }
   }
 }
@@ -129,6 +200,12 @@ export default {
         .user-msg{
           font-size:.32rem;
           color:#2b2b2b;
+          font-weight: bold;
+        }
+        .phone{
+          font-size:.32rem;
+          color:#2b2b2b;
+          font-weight: bold;
         }
         .detail-address{
           line-height: .4rem;
@@ -251,6 +328,9 @@ export default {
       color:#fff;
       background-color: $color-a;
       @include d-flex;
+    }
+    .abnormal{
+      color:#d8d8d8;
     }
   }
 }

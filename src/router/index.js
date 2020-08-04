@@ -13,6 +13,8 @@ import Login from '../pages/login/index.vue'
 import Register from '../pages/register/index.vue'
 import UserAddress from '../pages/user-address/index.vue'
 import AddAddress from '../pages/add-address/index.vue'
+import OrderPay from '../pages/order-pay/index.vue'
+import AbnormalPay from '../pages/abnormal-pay/index.vue'
 import {Token} from '../utils/token'
 
 Vue.use(VueRouter)
@@ -64,25 +66,35 @@ Vue.use(VueRouter)
     component: goodsNotfind
   },
   {
-      path: '/login',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register
-    },
-    {
-      path: '/user-address',
-      name: 'UserAddress',
-      component: UserAddress
-    },
-    {
-      path: '/add-address',
-      name: 'AddAddress',
-      component: AddAddress
-    },
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/user-address',
+    name: 'UserAddress',
+    component: UserAddress
+  },
+  {
+    path: '/add-address',
+    name: 'AddAddress',
+    component: AddAddress
+  },
+  {
+    path: '/order-pay',
+    name: 'OrderPay',
+    component: OrderPay
+  },
+  {
+    path: '/abnormal-pay',
+    name: 'AbnormalPay',
+    component: AbnormalPay
+  },
 ]
 
 const router = new VueRouter({
