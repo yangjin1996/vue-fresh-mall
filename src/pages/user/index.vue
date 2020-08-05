@@ -10,10 +10,10 @@
       </div>
     </div>
     <div class="order-container">
-      <div class="my-order border-bottom">
+      <router-link tag="div" to="/my-order" class="my-order border-bottom" >
         <span>我的订单</span>
         <div class="all-order"><p>查看全部</p><span class="iconfont">&#xe60e;</span></div>
-      </div>
+      </router-link>
       <ul class="order-status">
         <li>
           <span class="iconfont">&#xe601;</span>

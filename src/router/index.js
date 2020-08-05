@@ -15,6 +15,8 @@ import UserAddress from '../pages/user-address/index.vue'
 import AddAddress from '../pages/add-address/index.vue'
 import OrderPay from '../pages/order-pay/index.vue'
 import AbnormalPay from '../pages/abnormal-pay/index.vue'
+import MyOrder from '../pages/my-order/index.vue'
+import AfterSalesDetail from '../pages/after-sales-detail/index.vue'
 import {Token} from '../utils/token'
 
 Vue.use(VueRouter)
@@ -94,6 +96,16 @@ Vue.use(VueRouter)
     path: '/abnormal-pay',
     name: 'AbnormalPay',
     component: AbnormalPay
+  },
+  {
+    path: '/my-order',
+    name: 'MyOrder',
+    component: MyOrder
+  },
+  {
+    path: '/after-sales-detail',
+    name: 'AfterSalesDetail',
+    component: AfterSalesDetail
   },
 ]
 
