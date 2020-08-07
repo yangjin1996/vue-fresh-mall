@@ -58,7 +58,7 @@ export default {
     return {
       title:'确认订单',
       back:true,
-      backUrl:"/cart",
+      backUrl:"/",
       address:{},
       AddressId:0,
       goodsList:[],
@@ -142,7 +142,6 @@ export default {
       }).finally(() => {
         this.$showLoading(false)
       })
-      console.log(res)
       let deleteCartGoods = Storage.getItem('cartGoodsList')
       let buyGoods = this.goodsList.map(item => {
         return item.id
@@ -150,12 +149,8 @@ export default {
       buyGoods.forEach((item,index) => {
         if(deleteCartGoods.includes(item.id) !== -1){
           deleteCartGoods.splice(index,1)
-          if(deleteCartGoods.length > 0){
-            Storage.setItem('cartGoodsList',deleteCartGoods)
-          }else{
-            sessionStorage.removeItem('cartGoodsList')
-          }
         }
+        Storage.setItem('cartGoodsList',deleteCartGoods)
       })
       if(res.data.data.pass){
         const data = {

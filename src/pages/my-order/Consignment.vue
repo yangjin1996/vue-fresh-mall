@@ -1,23 +1,23 @@
 <template>
 <div class='wrap' v-show="Consignment === 'consignment'">
   <ul class="container-box">
-    <li class="goods">
+    <li class="goods" v-for="order of consignmentData" :key="order.id">
       <div class="order-num">
-        <span>订单编号：123456789</span>
+        <span>订单编号：{{order.order_no}}</span>
         <span>待发货</span>
       </div>
-      <div class="order-detail">
-        <img class="goods-img" src="">
+      <div class="order-detail" v-for="item of order.goods" :key="item.id">
+        <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
-          <p class="goods-title">11152639874526357</p>
-          <p class="goods-market-peice">11</p>
-          <p class="goods-price">￥123</p>
+          <p class="goods-title">{{item.goods_name}}</p>
+          <p class="goods-market-peice">{{item.goods_price}}</p>
+          <p class="goods-price">￥{{item.goods_price}}</p>
         </div>
-        <span class="cart iconfont">X1</span>
+        <span class="cart iconfont">X{{item.buy_number}}</span>
       </div>
       <div class="time">
-        <span>时间：2020年3月5日</span>
-        <p>共计1件<span class="total-money">￥80.00</span></p>
+        <span>时间：{{getOrderTime(order.create_time)}}</span>
+        <p>共计{{order.goods.length}}件<span class="total-money">￥{{order.total_price}}</span></p>
       </div>
     </li>
   </ul>
@@ -27,8 +27,24 @@
 <script>
 export default {
   props:{
-    Consignment:String
-  }
+    Consignment:String,
+    consignmentData:Array
+  },
+  mounted() {
+    console.log(this.consignmentData)
+  },
+  methods: {
+    getOrderTime(dates){
+      let date = new Date(dates);
+      let year=date.getFullYear();// getFullYear() 返回年
+      let month=date.getMonth()+1;// getMonth() 返回月份 (0 ~ 11)
+      let day = date.getDate();// getDate() 返回日 (1 ~ 31)
+      // let hours=date.getHours(); // getHours() 返回小时 (0 ~ 23)
+      // let minutes=date.getMinutes();// getMinutes() 返回分(0 ~ 59)
+      // let seconds=date.getSeconds();// getSeconds() 返回秒(0 ~ 59)
+      return year + '.' + month + '.' + day;
+    }
+  },
 }
 </script>
 
@@ -39,7 +55,6 @@ export default {
   box-sizing: border-box;
   .goods{
     width:100%;
-    height:3.4rem;
     padding:.2rem;
     margin-bottom: .2rem;
     background-color: #fff;
@@ -52,6 +67,7 @@ export default {
     }
     .time{
       width:100%;
+      margin-top:.32rem;
       @include d-flex($justify-c:space-between);
       .total-money{
         color:#ef8203;
@@ -60,6 +76,7 @@ export default {
     .order-detail{
       width:100%;
       padding:0 .1rem;
+      margin-top:.3rem;
       height:1.8rem;
       display: flex;
       box-sizing: border-box;

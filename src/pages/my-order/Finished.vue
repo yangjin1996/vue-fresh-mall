@@ -1,23 +1,23 @@
 <template>
 <div class='wrap' v-show="Finished === 'finished'">
   <ul class="container-box">
-    <li class="goods-container">
+    <li class="goods-container" v-for="order of finishedData" :key="order.id">
       <div class="order-num">
-        <span>订单编号：123456789</span>
+        <span>订单编号：{{order.order_no}}</span>
         <span>待发货</span>
       </div>
-      <div class="order-detail">
-        <img class="goods-img" src="">
+      <div class="order-detail" v-for="item of order.goods" :key="item.id">
+        <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
-          <p class="goods-title">11152639874526357</p>
-          <p class="goods-market-peice">11</p>
-          <p class="goods-price">￥123</p>
+          <p class="goods-title">{{item.goods_name}}</p>
+          <p class="goods-market-peice">{{item.goods_price}}</p>
+          <p class="goods-price">￥{{item.goods_price}}</p>
         </div>
-        <span class="cart iconfont">X1</span>
+        <span class="cart iconfont">X{{item.buy_number}}</span>
       </div>
       <div class="time">
         <span>时间：2020年3月5日</span>
-        <p>共计1件<span class="total-money">￥80.00</span></p>
+        <p>共计{{order.goods.length}}件<span class="total-money">￥{{order.total_price}}</span></p>
       </div>
       <div class="operation">
         <p class="button" @click="afterSales">申请售后</p>
@@ -30,12 +30,16 @@
 <script>
 export default {
   props:{
-    Finished:String
+    Finished:String,
+    finishedData:Array
   },
   methods: {
     afterSales(){
       this.$router.push({
-        path:'/after-sales-detail'
+        path:'/after-sales-detail',
+        query:{
+          finishedData:JSON.stringify(this.finishedData)
+        }
       })
     }
   },
@@ -49,7 +53,6 @@ export default {
   box-sizing: border-box;
   .goods-container{
     width:100%;
-    height:4.2rem;
     padding:.2rem;
     margin-bottom:.2rem;
     background-color: #fff;
@@ -63,6 +66,7 @@ export default {
     .time{
       width:100%;
       line-height: .35rem;
+      margin-top: .25rem;
       @include d-flex($justify-c:space-between);
       .total-money{
         color:#ef8203;
@@ -71,6 +75,7 @@ export default {
     .order-detail{
       width:100%;
       padding:0 .1rem;
+      margin-top:.3rem;
       height:1.8rem;
       display: flex;
       box-sizing: border-box;
@@ -125,6 +130,7 @@ export default {
       .button{
         width:2rem;
         height:.55rem;
+        margin-top:.35rem;
         background-color: $color-a;
         @include d-flex;
         border-radius: .05rem;

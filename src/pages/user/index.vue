@@ -3,9 +3,12 @@
   <common-header :title="title" :back="back"></common-header>
   <div id="wrapper-container">
     <div class="atatar-container">
-      <div class="avatar-img"></div>
+      <div class="avatar-img">
+        <img :src="userInfo.avatar">
+        <input class="avatar-bar" type="file" accept="image/*" @change="selectAvatar">
+      </div>
       <div class="vip-container">
-        <span class="nickname">小进进</span>
+        <span class="nickname">{{userInfo.nickname}}</span>
         <div class="vip-msg iconfont">&#xe600;代理</div>
       </div>
     </div>
@@ -19,15 +22,15 @@
           <span class="iconfont">&#xe601;</span>
           <p>待发货</p>
         </li>
-        <li>
+        <li @click="toReceived">
           <span class="iconfont">&#xe6b1;</span>
           <p>待收货</p>
         </li>
-        <li>
+        <li @click="toFinished">
           <span class="iconfont">&#xe63f;</span>
           <p>已完成</p>
         </li>
-        <li>
+        <li @click="toAfterSales">
           <span class="iconfont">&#xe624;</span>
           <p>售后</p>
         </li>
@@ -64,13 +67,16 @@
       </li>
     </ul>
   </div>
+  <div class="sign-out">退出登录</div>
   <common-footer :current="current"></common-footer>
 </div>
 </template>
 
 <script>
-import CommonHeader from '@/components/Header'
-import CommonFooter from '@/components/Footer'
+import CommonHeader from '@/components/Header';
+import CommonFooter from '@/components/Footer';
+import {Token} from '@/utils/token';
+const USER_TOKEN = Token.getToken()
 export default {
   components:{
     CommonHeader,
@@ -81,6 +87,88 @@ export default {
       title:'个人中心',
       back:true,
       current:3,
+      userInfo:{}
+    }
+  },
+  mounted() {
+    this.getUser();
+  },
+  methods: {
+    async getUser(){
+      await this.axios.get('api/user?type=2',{
+        headers:{
+          token:USER_TOKEN
+        }
+      }).then(res => {
+        this.userInfo = {
+          avatar:'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3557351520,3025082445&fm=26&gp=0.jpg',
+          nickname:res.data.data.nickname,
+        }
+      })
+    },
+    toConsignment(){
+      this.$router.push({
+        path:'/my-order',
+        query:{
+          category:'consignment'
+        }
+      })
+    },
+    toReceived(){
+      this.$router.push({
+        path:'/my-order',
+        query:{
+          category:'received'
+        }
+      })
+    },
+    toFinished(){
+      this.$router.push({
+        path:'/my-order',
+        query:{
+          category:'finished'
+        }
+      })
+    },
+    toAfterSales(){
+      this.$router.push({
+        path:'/my-order',
+        query:{
+          category:'after-sales'
+        }
+      })
+    },
+    selectAvatar(e){
+      if(e.target.files.length > 0){
+        const file = e.target.files[0];
+        const allowType = ['jpg','png','jpeg','svg','gif'];
+        const fileType = e.target.files[0].name.split('.').pop();
+        if(!allowType.includes(fileType)){
+          this.$showModel({
+            showText:'图片类型错误'
+          })
+          return
+        }
+        
+        const maxSize = 1024 * 1024;
+        if(file.size > maxSize){
+          this.$showModel({
+            showText:'图片尺寸太大'
+          })
+          return
+        }
+        //上传头像
+        let data = new FormData();
+        data.append('image',file)
+        this.axios.post('api/user/avatar?type=2',data,{
+          headers:{
+            token:USER_TOKEN,
+            'Content-Type':'multipart/form/data'
+          }
+        }).then(res => {
+          this.userInfo.avatar = res.src
+        })
+      }
     }
   },
 }
@@ -106,6 +194,23 @@ export default {
     border-radius: 50%;
     border: 1px solid #d8917c;
     box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    img{
+      width:100%;
+      height:100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+    .avatar-bar{
+      width:100%;
+      height:100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      opacity: 0;
+    }
   }
   .vip-container{
     width:0;
@@ -140,7 +245,7 @@ export default {
     box-sizing: border-box;
     @include d-flex($justify-c:space-between);
     .all-order{
-      width:1.2rem;
+      width:1.3rem;
       font-size: .2rem;
       color:#4c4c4c;
       @include d-flex($justify-c:space-between);
@@ -195,5 +300,17 @@ export default {
       }
     }
   }
+}
+.sign-out{
+  width:90%;
+  height:.8rem;
+  border-radius: .1rem;
+  background-color: $color-a;
+  color:#fff;
+  font-size: .3rem;
+  @include d-flex;
+  position: fixed;
+  left:5%;
+  bottom:2.6rem;
 }
 </style>

@@ -12,7 +12,7 @@
     </div>
     <div class="order">
       <p>订单金额</p>
-      <span class="money">￥{{totalMoney}}</span>
+      <span class="money">￥{{totalMoney.toFixed(2)}}</span>
     </div>
   </div>
   <p class="status">您的订单已成功提交，请等待平台发货</p>
@@ -68,7 +68,7 @@ export default {
 }
 .order-msg{
   margin-top:.66rem;
-  padding:0 .45rem;
+  padding:0 .35rem;
   @include d-flex($justify-c:space-between);
   box-sizing: border-box;
   color:#999;
@@ -76,7 +76,7 @@ export default {
   .order{
    @include d-flex($justify-c:space-between); 
    span{
-     margin-left:.2rem;
+     margin-left:.1rem;
    }
    .num{
      color:#333;

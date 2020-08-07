@@ -53,12 +53,15 @@ export default {
       back:true,
       title:'申请售后',
       textNumber:'',
-      maxNumber:200
+      maxNumber:200,
+      finishedData:[]
     }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.backUrl = from.path
+      vm.finishedData = JSON.parse(to.query.finishedData)
+      console.log(vm.finishedData)
     })
   }
 }
@@ -143,9 +146,9 @@ export default {
     }
   }
   .reasons{
-    width:100%;
     height:3.6rem;
     padding:.2rem;
+    margin:0 .2rem;
     background-color: #fff;
     box-sizing: border-box;
     .detail{
@@ -177,10 +180,9 @@ export default {
     }
   }
   .files{
-    width:100%;
     height:2.8rem;
     padding:.2rem;
-    margin-top:.2rem;
+    margin:.2rem;
     background-color: #fff;
     box-sizing: border-box;
     .detail{
@@ -204,12 +206,14 @@ export default {
     width:90%;
     height:.8rem;
     margin:0 auto;
-    margin-top:.2rem;
     font-size: .28rem;
     background-color: $color-a;
     color:#fff;
     border-radius: .05rem;
     @include d-flex;
+    position: fixed;
+    left:5%;
+    bottom: .5rem;
   }
 }
 </style>

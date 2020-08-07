@@ -110,13 +110,18 @@ export default {
       this.goods.buyNumber = this.buyNumber;
       let Money = this.buyNumber * this.goods.price;
       Money = Money.toFixed(2) * 1;
+      Storage.setItem('confirm-order',{
+        cartGoodsList:[this.goods],
+        totalMoney:Money,
+        goodsNum:this.goods.buyNumber
+      })
       this.$router.push({
         path:'/confirm-order',
-        query:{
-          cartGoodsList:[this.goods],
-          totalMoney:Money,
-          goodsNum:this.goods.buyNumber,
-        }
+        // query:{
+        //   cartGoodsList:[this.goods],
+        //   totalMoney:Money,
+        //   goodsNum:this.goods.buyNumber,
+        // }
       })
     },
     initToCartGoods(item){
