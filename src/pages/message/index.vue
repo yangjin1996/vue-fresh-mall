@@ -48,6 +48,11 @@ export default {
       check:true,
     }
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.backUrl = from.path
+    })
+  },
   methods:{
     changeCheck(check){
       if(this.check === check) return;

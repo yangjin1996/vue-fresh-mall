@@ -16,13 +16,11 @@
           <img class="goods-img" v-lazy="item.img">
           <div class="goods-info">
             <p class="goods-title">{{item.name}}</p>
-            <p class="goods-weight">200g/袋</p>
+            <p class="goods-weight">{{item.market_price}}</p>
             <p class="goods-price">￥{{item.price}}</p>
           </div>
           <div class="button">
-            <span class="iconfont reduce">&#xe60c;</span>
-            <span class="number">0</span>
-            <span class="iconfont add">&#xe626;</span>
+            <span class="cart iconfont" @click.stop="addCart(item)">&#xe63b;</span>
           </div>
         </li>
       </ul>
@@ -45,12 +43,11 @@ export default {
       backUrl:'',
       navList:[],
       currentCatId:0,
-      goodsList:[]
+      goodsList:[],
+      cartGoodsList:[],
+      buyNumber:1
     }
   },
-  // created() {
-  //   this.$showLoading(true)
-  // },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.backUrl = from.path;
@@ -72,18 +69,19 @@ export default {
     },
     async switchBtn(cat_id){
       //一级分类，二级分类（携带cat_id参数
-      this.$showLoading(true)
       this.currentCatId = cat_id;
       const goods = Storage.getItem(`categorygoodsList${cat_id}`);
       if(goods.length === 0){
+        this.$showLoading(true)
         await this.axios.get(`api/goods_list?type=2&cat_id=${cat_id}`).then(res => {
           this.goodsList = res.data.data.goods;
           Storage.setItem(`categorygoodsList${cat_id}`,this.goodsList);
-          this.$showLoading()
+        }).finally(() => {
+          this.$showLoading(false)
         })
       }else{
         this.goodsList = goods;
-        this.$showLoading()
+        this.$showLoading(false)
       }
     },
     toGoodsDetail(goods_id){
@@ -91,6 +89,33 @@ export default {
         path:'/goods-detail',
         query:{
           goods_id
+        }
+      })
+    },
+    addCart(item){
+      const goodsList = Storage.getItem('cartGoodsList');
+      let list = [];
+      let exeGoods = goodsList.map(val => {
+        return val.id;
+      })
+      let index = exeGoods.indexOf(item.id);
+      if(index !== -1){
+        goodsList[index].buyNumber += 1
+        list = goodsList;
+      }else{
+        item.buyNumber = this.buyNumber;
+        list = goodsList;
+        list.unshift(item);
+      }
+      this.cartGoodsList = list;
+      Storage.setItem('cartGoodsList',this.cartGoodsList);
+      this.$showModel({
+        title : '添加购物车成功,是否前往购物车？',
+        btn: {confirm:'确定',cancel:'取消'},
+        success:res => {
+          if(res.confirm){
+            this.$router.push('/cart')
+          }
         }
       })
     },
@@ -188,6 +213,7 @@ export default {
 					font-size:.24rem;
 					color:#2b2b2b;
 					font-weight:550;
+          text-decoration: line-through;
 				}
         .goods-price{
           color:#ef8203;
@@ -200,33 +226,14 @@ export default {
         right:0;
         bottom:.45rem;
         @include d-flex($justify-c:space-between);
-        .iconfont{
-          font-size:.24rem;
-          font-weight:600;
-          display:inline-block;
-          width:.4rem;
-          height:.4rem;
-          @include d-flex;
-        }
-        .reduce{
-          background-color:#eee;
-          color:#a9a9a9;
-        }
-        .add{
-          background-color:$color-a;
-          color:#fff;
-        }
-        .number{
-          font-size:.28rem;
+        .cart{
+          font-size: .45rem;
+          position: absolute;
+          right:0;
+          bottom: -.2rem;
+          color:$color-a;
         }
       }
-			.cart{
-				font-size:.5rem;
-				color:$color-a;
-				position:absolute;
-				right:.2rem;
-				bottom:.6rem;
-			}
 			.goods-img{
 				width:1.85rem;
 				height:1.85rem;

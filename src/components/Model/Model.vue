@@ -20,6 +20,7 @@ export default {
       visible:false,
       selectSrc:false,
       showMask:false,
+      showImg:true,
       showText:'',
       title:'',
       btn:{

@@ -11,6 +11,15 @@
         <span class="nickname">{{userInfo.nickname}}</span>
         <div class="vip-msg iconfont">&#xe600;代理</div>
       </div>
+      <div class="coding">
+        <span class="iconfont icon" @click="showCo">&#xe7a0;</span>
+        <div class="show" v-show="Code">
+          <div class="showImg">
+            <img src="../../assets/images/coding.png" alt="">
+            <span class="iconfont delete" @click="hideCode">&#xe64a; </span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="order-container">
       <router-link tag="div" to="/my-order" class="my-order border-bottom" >
@@ -51,23 +60,23 @@
         </div>
         <span class="iconfont">&#xe60e;</span>
       </li>
-      <li>
+      <router-link tag="li" to="/message">
         <div class="context">
           <span class="iconfont">&#xe637;</span>
           <p>消息中心</p>
         </div>
         <span class="iconfont">&#xe60e;</span>
-      </li>
-      <li>
+      </router-link>
+      <router-link tag="li" to="/user-address">
         <div class="context">
           <span class="iconfont">&#xe656;</span>
           <p>收货地址</p>
         </div>
         <span class="iconfont">&#xe60e;</span>
-      </li>
+      </router-link>
     </ul>
   </div>
-  <div class="sign-out">退出登录</div>
+  <div class="sign-out">退出登录{{$store.state.a}}</div>
   <common-footer :current="current"></common-footer>
 </div>
 </template>
@@ -87,6 +96,7 @@ export default {
       title:'个人中心',
       back:true,
       current:3,
+      Code:false,
       userInfo:{}
     }
   },
@@ -95,15 +105,18 @@ export default {
   },
   methods: {
     async getUser(){
+      this.$showLoading(true)
       await this.axios.get('api/user?type=2',{
         headers:{
           token:USER_TOKEN
         }
       }).then(res => {
         this.userInfo = {
-          avatar:'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3557351520,3025082445&fm=26&gp=0.jpg',
+          avatar:res.data.data.avatar,
           nickname:res.data.data.nickname,
         }
+      }).finally(() => {
+        this.$showLoading(false)
       })
     },
     toConsignment(){
@@ -138,7 +151,7 @@ export default {
         }
       })
     },
-    selectAvatar(e){
+    async selectAvatar(e){
       if(e.target.files.length > 0){
         const file = e.target.files[0];
         const allowType = ['jpg','png','jpeg','svg','gif'];
@@ -160,15 +173,24 @@ export default {
         //上传头像
         let data = new FormData();
         data.append('image',file)
-        this.axios.post('api/user/avatar?type=2',data,{
+        this.$showLoading(true)
+        await this.axios.post('api/user/avatar?type=2',data,{
           headers:{
             token:USER_TOKEN,
             'Content-Type':'multipart/form/data'
           }
         }).then(res => {
-          this.userInfo.avatar = res.src
+          this.userInfo.avatar = res.data.data.src
+        }).finally(() => {
+          this.$showLoading(false)
         })
       }
+    },
+    showCo(){
+      this.Code = true
+    },
+    hideCode(){
+      this.Code = false
     }
   },
 }
@@ -231,6 +253,39 @@ export default {
       border-radius: .2rem;
       background-color: #ef8203;
       @include d-flex;
+    }
+  }
+  .coding{
+    @include d-flex;
+    .icon{
+      font-size: .7rem;
+    }
+    .show{
+      width:100vw;
+      height:100vh;
+      background-color: rgba($color: #000000, $alpha: .3);
+      @include d-flex;
+      position: fixed;
+      left:0;
+      top:0;
+      z-index: 9;
+      .showImg{
+        padding:.2rem;
+        width:1.2rem;
+        height:1.2rem;
+        background-color: #fff;
+        img{
+          width:100%;
+          height:100%;
+        }
+        .delete{
+          font-size: .4rem;
+          position: absolute;
+          top:58%;
+          left:50%;
+          transform: translateX(-50%);
+        }
+      }
     }
   }
 }

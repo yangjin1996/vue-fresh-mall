@@ -74,8 +74,12 @@ export default {
       }else{
         vm.getUserAddress();
       }
+      // if(from.path === '/my-address'){
+      //   return
+      // }else{
+      //   vm.getUserAddress();
+      // }
     })
-    
   },
   mounted(){
     this.$showLoading(true);
@@ -96,7 +100,7 @@ export default {
         }
       });
       this.address = address.data.data || {}
-      this.$showLoading();
+      this.$showLoading(false);
     },
     getGoodsList(){
       let data = Storage.getItem('confirm-order')

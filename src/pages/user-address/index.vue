@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      backUrl:'',
+      backUrl:'/',
       back:true,
       title:'我的地址',
       addressList:[],
