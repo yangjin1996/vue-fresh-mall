@@ -6,7 +6,7 @@
         <span>订单编号：{{order.order_no}}</span>
         <span>待发货</span>
       </div>
-      <div class="order-detail" v-for="item of order.goods" :key="item.id">
+      <div class="order-detail" v-for="item of order.goods" :key="item.goods_id" @click = toGoodsDetail(item.goods_id)>
         <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
           <p class="goods-title">{{item.goods_name}}</p>
@@ -16,7 +16,7 @@
         <span class="cart iconfont">X{{item.buy_number}}</span>
       </div>
       <div class="time">
-        <span>时间：2020年3月5日</span>
+        <span>时间：{{getOrderTime(order.create_time)}}</span>
         <p>共计{{order.goods.length}}件<span class="total-money">￥{{order.total_price}}</span></p>
       </div>
       <div class="operation">
@@ -33,16 +33,31 @@ export default {
     Received:String,
     receivedData:Array
   },
-  mounted() {
-    console.log(this.receivedData)
-  },
   methods: {
     receivedGoods(){
       this.$showModel({
         title:'为保证您的售后权益，请收到确认无误后，再确认收货哦！',
         btn : {confirm:'确认收货',cancel:'取消'}
       })
-    }
+    },
+    getOrderTime(dates){
+      let date = new Date(dates);
+      let year=date.getFullYear();// getFullYear() 返回年
+      let month=date.getMonth()+1;// getMonth() 返回月份 (0 ~ 11)
+      let day = date.getDate();// getDate() 返回日 (1 ~ 31)
+      // let hours=date.getHours(); // getHours() 返回小时 (0 ~ 23)
+      // let minutes=date.getMinutes();// getMinutes() 返回分(0 ~ 59)
+      // let seconds=date.getSeconds();// getSeconds() 返回秒(0 ~ 59)
+      return year + '.' + month + '.' + day;
+    },
+    toGoodsDetail(goods_id){
+      this.$router.push({
+        path:'/goods-detail',
+        query:{
+          goods_id
+        }
+      })
+    },
   },
 }
 </script>

@@ -6,7 +6,7 @@
         <span>订单编号：{{order.order_no}}</span>
         <span>待发货</span>
       </div>
-      <div class="order-detail" v-for="item of order.goods" :key="item.id">
+      <div class="order-detail" v-for="item of order.goods" :key="item.goods_id" @click = toGoodsDetail(item.goods_id)>
         <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
           <p class="goods-title">{{item.goods_name}}</p>
@@ -30,9 +30,6 @@ export default {
     Consignment:String,
     consignmentData:Array
   },
-  mounted() {
-    console.log(this.consignmentData)
-  },
   methods: {
     getOrderTime(dates){
       let date = new Date(dates);
@@ -43,6 +40,14 @@ export default {
       // let minutes=date.getMinutes();// getMinutes() 返回分(0 ~ 59)
       // let seconds=date.getSeconds();// getSeconds() 返回秒(0 ~ 59)
       return year + '.' + month + '.' + day;
+    },
+    toGoodsDetail(goods_id){
+      this.$router.push({
+        path:'/goods-detail',
+        query:{
+          goods_id
+        }
+      })
     }
   },
 }

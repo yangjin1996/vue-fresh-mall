@@ -27,7 +27,7 @@
         <div class="all-order"><p>查看全部</p><span class="iconfont">&#xe60e;</span></div>
       </router-link>
       <ul class="order-status">
-        <li>
+        <li @click="toConsignment">
           <span class="iconfont">&#xe601;</span>
           <p>待发货</p>
         </li>
