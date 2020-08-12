@@ -5,6 +5,7 @@ import VueAxios from 'vue-axios';
 import VueLazyload from 'vue-lazyload';
 import router from './router';
 import store from './store';
+import AwesomePicker from 'vue-awesome-picker';
 import BScroll from 'better-scroll';
 import Model from './components/Model/index';
 import Loading from './components/Loading/index';
@@ -34,6 +35,7 @@ Vue.use(VueLazyload, {
 })
 Vue.use(Model)
 Vue.use(Loading)
+Vue.use(AwesomePicker);
 
 new Vue({
   router,

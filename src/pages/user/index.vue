@@ -76,7 +76,13 @@
       </router-link>
     </ul>
   </div>
-  <div class="sign-out">退出登录{{$store.state.a}}</div>
+  <div class="sign-out" @click="chooseDate">退出登录</div>
+  <awesome-picker
+  ref="picker"
+  type="date"
+  :colorConfirm="'#8fc321'"
+  @confirm="handlePickerConfirm">
+</awesome-picker>
   <common-footer :current="current"></common-footer>
 </div>
 </template>
@@ -191,6 +197,12 @@ export default {
     },
     hideCode(){
       this.Code = false
+    },
+    chooseDate(){
+      this.$refs.picker.show();
+    },
+    handlePickerConfirm(){
+
     }
   },
 }
