@@ -5,37 +5,41 @@
     <div class="news" :class="{'on':check}" @click="changeCheck(true)">推送广告</div>
     <div class="news" :class="{'on':!check}"  @click="changeCheck(false)">新闻事件</div>
   </div>
-  <ul class="news-list" v-if="check">
-    <li>
-      <div class="content-left">
-        <div class="iconfont">&#xe610;</div>
-        <div class="text">
-          <p class="title">消息名称</p>
-          <p>消息简介</p>
-          <p>12月1日</p>
+  <div class="wrapper-container" ref="container">
+    <ul class="news-list" v-if="check">
+      <li class="news-cell" v-for="item of newsList" :key="item.id">
+        <div class="content-left">
+          <div class="iconfont">&#xe610;</div>
+          <div class="text">
+            <p class="title">{{item.title}}</p>
+            <p class="content">{{item.content}}</p>
+            <p>{{item.time|dateFormat}}</p>
+          </div>
         </div>
-      </div>
-      <span class="iconfont">&#xe60e;</span>
-    </li>
-  </ul>
-  <ul class="news-list" v-else>
-    <li>
-      <div class="content-left">
-        <div class="iconfont">&#xe610;</div>
-        <div class="text">
-          <p class="title">新闻名称</p>
-          <p>新闻简介</p>
-          <p>12月2日</p>
+        <span class="iconfont"></span>
+      </li>
+    </ul>
+    <ul class="news-list" v-else>
+      <li class="news-cell">
+        <div class="content-left">
+          <div class="iconfont">&#xe610;</div>
+          <div class="text">
+            <p class="title">新闻名称</p>
+            <p>新闻简介</p>
+            <p>12月2日</p>
+          </div>
         </div>
-      </div>
-      <span class="iconfont">&#xe60e;</span>
-    </li>
-  </ul>
+        <span class="iconfont">&#xe60e;</span>
+      </li>
+    </ul>
+  </div>
 </div>
 </template>
 
 <script>
+import {Token} from'@/utils/token';
 import CommonHeader from'@/components/Header';
+import {dateFormat} from '@/utils/function'
 export default {
   components:{
     CommonHeader
@@ -46,6 +50,13 @@ export default {
       back:true,
       backUrl:"/",
       check:true,
+      newsList:[],
+      scroll:null
+    }
+  },
+  filters:{
+    dateFormat(date){
+      return dateFormat('YYYY-mm-dd',new Date(date * 1000))
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -53,11 +64,47 @@ export default {
       vm.backUrl = from.path
     })
   },
+  mounted() {
+    this.getNewsData();
+    this.getBscrollBoxHeight();
+    this.scroll = new this.$BScroll('.wrapper-container',{
+      scrollY: true,
+      click: true,
+      probeType: 3,
+      pullDownRefresh:{
+        threshold: -10, // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+        stop: 0
+      },
+      pullUpLoad: {
+        threshold: 50, 
+      },
+    });
+  },
   methods:{
     changeCheck(check){
       if(this.check === check) return;
       this.check = check
-    }
+    },
+    async getNewsData(){
+      const USER_TOKEN = Token.getToken()
+      const newsList = await this.axios.get('shose/notice?type=2',{
+        headers:{
+          token:USER_TOKEN
+        },
+        params:{
+          pages:1,
+          count:8
+        }
+      })
+      this.newsList = newsList.data.data.list
+    },
+    getBscrollBoxHeight(){
+      let bodyHeight = document.body.clientHeight;
+      const html = document.querySelector('html');
+      let WindowHeight = bodyHeight / parseFloat(html.style.fontSize);
+      let BscBoxHeight = WindowHeight - 1.6 + 'rem';
+      this.$refs.container.style.height = BscBoxHeight
+    },
   }
 }
 </script>
@@ -66,6 +113,10 @@ export default {
 @import '~@/assets/scss/global';
 .header{
   border-bottom:none;
+}
+.wrapper-container{
+  width:100%;
+  overflow: hidden;
 }
 .menu{
   width:100%;
@@ -92,10 +143,11 @@ export default {
     width:100%;
     padding:.2rem;
     box-sizing:border-box;
-    li{
+    .news-cell{
       width:100%;
       height:1.8rem;
-      padding:.3rem .2rem;
+      padding:.2rem .2rem;
+      margin-bottom: .1rem;
       background-color: #fff;
       box-sizing:border-box;
        @include d-flex($justify-c:space-between);
@@ -121,6 +173,9 @@ export default {
           p{
             font-size:.24rem;
             color:$color-n;
+            &.content{
+              line-height: .35rem;
+            }
           }
           .title{
             font-size:.28rem;

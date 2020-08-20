@@ -2,20 +2,29 @@
 <div class='wrap'>
   <common-header :backUrl="backUrl" :back="back" :title="title"></common-header>
   <ul class="nav">
-    <li class="nav-cell" @click="category = 'consignment'" :class="{on : category === 'consignment'}">待发货</li>
-    <li class="nav-cell" @click="category = 'received'" :class="{on : category === 'received'}">待收货</li>
-    <li class="nav-cell" @click="category = 'finished'" :class="{on : category === 'finished'}">已完成</li>
-    <li class="nav-cell" @click="category = 'after-sales'" :class="{on : category === 'after-sales'}">售后</li>
+    <li class="nav-cell" @click="category = 'consignment';status = 1" :class="{on : category === 'consignment'}">待发货</li>
+    <li class="nav-cell" @click="category = 'received';status = 2" :class="{on : category === 'received'}">待收货</li>
+    <li class="nav-cell" @click="category = 'finished';status = 3" :class="{on : category === 'finished'}">已完成</li>
+    <li class="nav-cell" @click="category = 'after-sales';status = 4" :class="{on : category === 'after-sales'}">售后</li>
   </ul>
-  <consignment :Consignment="category" :consignmentData="consignmentData"></consignment>
-  <received :Received="category" :receivedData="receivedData"></received>
-  <finished :Finished="category" :finishedData="finishedData"></finished>
+  <div class="wrapper-container" ref="container">
+    <div>
+      <transition name="fade">
+        <div v-if="pullingDown" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
+      </transition>
+      <consignment :Consignment="category" :consignmentData="consignmentData"></consignment>
+      <received :Received="category" :receivedData="receivedData"></received>
+      <finished :Finished="category" :finishedData="finishedData"></finished>
+      <transition name="fade">
+        <div v-if="pullingUp" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
+      </transition>
+    </div>
+  </div>
 </div>
 </template>
 
 <script>
 import {Token} from '@/utils/token';
-const USER_TOKEN = Token.getToken()
 import CommonHeader from'@/components/Header';
 import Consignment from'./Consignment';
 import Received from'./Received';
@@ -33,10 +42,21 @@ export default {
       back:true,
       title:'我的订单',
       category:'consignment',
-      orderList:[],
+      page:1,
+      count:8,
+      total:0,
+      status:1,
+      type:'',
+      scroll:null,
       consignmentData:[],
       finishedData:[],
-      receivedData:[]
+      receivedData:[],
+      pullingDown:false,
+      pullingUp:false,
+      goodsList:[
+        {img:"@/assets/images/loading.gif"},
+        {img:"@/assets/images/loading.gif"},
+      ],
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -46,43 +66,104 @@ export default {
     })
   },
   mounted() {
-    this. getOrderData()
+    this.initPage()
   },
   methods: {
-    async getOrderData(){
-      this.$showLoading(true);
-      await this.axios.get('api/user/order?type=2',{//'shose/order?type=2'
-        params:{},
+    async initPage(status){
+      this.getBscrollBoxHeight();
+      if(!status){
+        this.getOrderData(1);
+        this.getOrderData(2);
+        this.getOrderData(3);
+      }else{
+        this.getOrderData(status);
+      }
+      this.scroll = new this.$BScroll('.wrapper-container',{
+          scrollY: true,
+          click: true,
+          probeType: 3,
+          pullDownRefresh:{
+            threshold: -10, // 在上拉到超过底部 20px 时，触发 pullingUp 事件
+            stop: 0
+          },
+          pullUpLoad: {
+            threshold: 50, 
+          },
+      });
+      this.scroll.on('pullingDown',() => {
+        this.pullingDown = true;
+        this.type = 'down';
+        this.initPage(this.status);
+      });
+      this.scroll.on('pullingUp',() => {
+        console.log('pullingUp');
+        this.pullingUp = true;
+        this.type = 'up';
+        this.getOrderData(this.status)
+      })
+    },
+    getBscrollBoxHeight(){
+      let bodyHeight = document.body.clientHeight;
+      const html = document.querySelector('html');
+      let WindowHeight = bodyHeight / parseFloat(html.style.fontSize);
+      let BscBoxHeight = WindowHeight - 2.2 + 'rem';
+      this.$refs.container.style.height = BscBoxHeight
+    },
+    async getOrderData(status){
+      const USER_TOKEN = Token.getToken()
+      let orderList;
+      if(this.type === ''){
+         this.$showLoading(true);
+      }else if (this.type === 'up') {
+        if(this.page < Math.ceil(this.total / 8)){
+          this.page++
+        }else{
+          this.pullingUp = false;
+          this.scroll.finishPullUp();
+          return
+        }
+      }else if(this.type === 'down'){
+        this.page = 1;
+      }
+      await this.axios.get('api/user/order?type=2',{
+        params:{
+          page:this.page,
+          count:this.count,
+          type:status
+        },
         headers:{
           token:USER_TOKEN
         }
       }).then(res => {
-        this.orderList = res.data.data.list;
-        if(this.orderList.length === 0){
-          this.$showModel({
-            showText:'没有订单'
-          })
+        orderList = res.data.data;
+        if(this.type === ''){
+          this.$showLoading(false);
         }else{
-          //存储订单数据
-          this.formatData(this.orderList)
+          this.pullingDown = false;
+          this.pullingUp = false;
+          this.scroll.finishPullUp();
+          this.scroll.finishPullDown();
         }
-        this.$showLoading(false)
       })
-    },
-    formatData(data){
-      // 1表示待发货，2表示待收货，3表示已完成
-      // this.consignmentData = data.filter(item => {
-      //   return item.status === 1
-      // });
-      // this.receivedData = data.filter(item => {
-      //   return item.status === 2
-      // });
-      // this.finishedData = data.filter(item => {
-      //   return item.status === 3
-      // });
-      this.consignmentData = data.slice(0,3);
-      this.receivedData = data.slice(3,5);
-      this.finishedData = data.slice(5);
+      if(status === 1){
+        if(this.type === 'down'){
+          this.consignmentData = [];
+        }
+        this.consignmentData = this.consignmentData.concat(orderList.list)
+        this.total = orderList.total
+      }else if(status === 2){
+        if(this.type === 'down'){
+          this.receivedData = [];
+        }
+        this.receivedData = this.receivedData.concat(orderList.list)
+        this.total = orderList.total
+      }else if(status === 3){
+        if(this.type === 'down'){
+          this.finishedData = [];
+        }
+        this.finishedData = this.finishedData.concat(orderList.list)
+        this.total = orderList.total
+      }
     }
   }
 }
@@ -90,6 +171,30 @@ export default {
 
 <style lang='scss' scoped>
 @import '~@/assets/scss/global';
+.fade-enter-active, .fade-leave-active {
+  transition: all .5s ease;
+}
+.fade-enter, .fade-leave-to{
+  transform: scale(0);
+}
+.wrapper-container{
+  width:100%;
+  overflow: hidden;
+}
+.loading{
+  font-size:.2rem;
+  color:#999;
+  padding-bottom:.2rem;
+  text-align:center;
+  img{
+    width:.3rem;
+    height:.3rem;
+  }
+}
+.wrap{
+  padding-top: 1.8rem;
+  box-sizing: border-box;
+}
 .nav{
   padding-top:.8rem;
   margin-bottom: .2rem;
@@ -97,6 +202,10 @@ export default {
   height:.8rem;
   background-color: #fff;
   @include d-flex($justify-c:space-around);
+  position: fixed;
+  left:0;
+  top:0;
+  z-index: 2;
   .nav-cell{
     font-size:.28rem;
     color:#666;

@@ -22,7 +22,7 @@ export default {
 .mask{
   width:100%;
   height:100vh;
-  background-color: rgba(0,0,0,.4);
+  background-color: rgba(0,0,0,.2);
   position: fixed;
   top:0;
   left:0;

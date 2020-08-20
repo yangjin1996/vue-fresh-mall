@@ -1,22 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../pages/home/index.vue'
-import Search from '../pages/search/index.vue'
-import GoodsDetail from '../pages/goods-detail/index.vue'
-import Cart from '../pages/cart/index.vue'
-import User from '../pages/user/index.vue'
-import Category from '../pages/category/index.vue'
-import Message from '../pages/message/index.vue'
-import ConfirmOrder from '../pages/confirm-order/index.vue'
-import goodsNotfind from '../pages/goods-notfind/index.vue'
-import Login from '../pages/login/index.vue'
-import Register from '../pages/register/index.vue'
-import UserAddress from '../pages/user-address/index.vue'
-import AddAddress from '../pages/add-address/index.vue'
-import OrderPay from '../pages/order-pay/index.vue'
-import AbnormalPay from '../pages/abnormal-pay/index.vue'
-import MyOrder from '../pages/my-order/index.vue'
-import AfterSalesDetail from '../pages/after-sales-detail/index.vue'
 import {Token} from '../utils/token'
 
 Vue.use(VueRouter)
@@ -30,82 +14,87 @@ Vue.use(VueRouter)
   {
     path: '/search',
     name: 'Search',
-    component: Search
+    component: () => import('../pages/search/index.vue')
   },
   {
     path: '/goods-detail',
     name: 'GoodsDetail',
-    component: GoodsDetail
+    component: () => import('../pages/goods-detail/index.vue')
   },
   {
     path: '/user',
     name: 'User',
-    component: User
+    component: () => import('../pages/user/index.vue')
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: Cart
+    component: () => import('../pages/cart/index.vue')
   },
   {
     path: '/category',
     name: 'Category',
-    component: Category
+    component: () => import('../pages/category/index.vue')
   },
   {
     path: '/message',
     name: 'Message',
-    component: Message
+    component: () => import('../pages/message/index.vue')
   },
   {
     path: '/confirm-order',
     name: 'ConfirmOrder',
-    component: ConfirmOrder
+    component: () => import('../pages/confirm-order/index.vue')
   },
   {
     path: '/goods-notfind',
     name: 'goodsNotfind',
-    component: goodsNotfind
+    component: () => import('../pages/goods-notfind/index.vue')
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: () => import('../pages/login/index.vue')
   },
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: () => import('../pages/register/index.vue')
   },
   {
     path: '/user-address',
     name: 'UserAddress',
-    component: UserAddress
+    component: () => import('../pages/user-address/index.vue')
   },
   {
     path: '/add-address',
     name: 'AddAddress',
-    component: AddAddress
+    component: () => import('../pages/add-address/index.vue')
   },
   {
     path: '/order-pay',
     name: 'OrderPay',
-    component: OrderPay
+    component: () => import('../pages/order-pay/index.vue')
   },
   {
     path: '/abnormal-pay',
     name: 'AbnormalPay',
-    component: AbnormalPay
+    component: () => import('../pages/abnormal-pay/index.vue')
   },
   {
     path: '/my-order',
     name: 'MyOrder',
-    component: MyOrder
+    component: () => import('../pages/my-order/index.vue')
   },
   {
     path: '/after-sales-detail',
     name: 'AfterSalesDetail',
-    component: AfterSalesDetail
+    component: () => import('../pages/after-sales-detail/index.vue')
+  },
+  {
+    path: '/order-detail',
+    name: 'AfterSalesDetail',
+    component: () => import('../pages/order-detail/index.vue')
   },
 ]
 

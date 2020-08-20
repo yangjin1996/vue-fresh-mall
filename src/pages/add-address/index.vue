@@ -44,6 +44,7 @@ import VDistpicker from 'v-distpicker';
 import { Token } from '@/utils/token';
 const USER_TOKEN = Token.getToken()
 export default {
+  name:"AddAddress",
   components:{
     CommonHeader,
     VDistpicker

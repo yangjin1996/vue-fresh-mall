@@ -76,7 +76,7 @@
       </router-link>
     </ul>
   </div>
-  <div class="sign-out" @click="chooseDate">退出登录</div>
+  <div class="sign-out" @click="logout">退出登录</div>
   <awesome-picker
   ref="picker"
   type="date"
@@ -93,6 +93,7 @@ import CommonFooter from '@/components/Footer';
 import {Token} from '@/utils/token';
 const USER_TOKEN = Token.getToken()
 export default {
+  name:"User",
   components:{
     CommonHeader,
     CommonFooter,
@@ -198,8 +199,20 @@ export default {
     hideCode(){
       this.Code = false
     },
-    chooseDate(){
-      this.$refs.picker.show();
+    // chooseDate(){
+    //   this.$refs.picker.show();
+    // },
+    logout(){
+      sessionStorage.removeItem('token')
+      this.$showModel({
+        title : '是否退出登录？',
+        btn: {confirm:'确定',cancel:'取消'},
+        success:res => {
+          if(res.confirm){
+            this.$router.push('/')
+          }
+        }
+      })
     },
     handlePickerConfirm(){
 

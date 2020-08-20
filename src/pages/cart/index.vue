@@ -59,6 +59,7 @@ import CommonHeader from '@/components/Header';
 import CommonFooter from '@/components/Footer';
 let touchStartX;
 export default {
+  name:"Cart",
   components:{
     CommonHeader,
     CommonFooter,

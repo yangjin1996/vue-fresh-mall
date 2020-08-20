@@ -1,8 +1,9 @@
 // 项目入口
 <template>
   <div id="app">
-    
-    <router-view/>
+    <keep-alive include="Category,Home,User" exclude="">
+      <router-view />
+    </keep-alive>
   </div>
 </template>
 <script>

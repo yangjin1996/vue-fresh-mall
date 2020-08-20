@@ -28,6 +28,7 @@ import RecommendGoods from'./recommendGoods';
 import TheFooter from'@/components/Footer';
 import { Storage } from'@/utils/storage';
 export default {
+  name:"Home",
   components:{
     CommonHeader,
     SearchBar,

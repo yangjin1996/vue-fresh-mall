@@ -33,12 +33,12 @@ export default {
     })
   },
   mounted() {
-    this.$showLoading(true);
     this.getUserAddress();
     this.showAddAddress = this.addressList.length <= 10 ? true : false
   },
   methods: {
     async getUserAddress(){
+      this.$showLoading(true);
       await this.axios.get('shose/address?type=2',{
         headers:{
           token:USER_TOKEN

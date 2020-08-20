@@ -33,6 +33,7 @@
 import { Storage } from'@/utils/storage';
 import CommonHeader from'@/components/Header';
 export default {
+  name:"Category",
   components:{
     CommonHeader
   },
