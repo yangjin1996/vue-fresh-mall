@@ -2,10 +2,10 @@
 <div class='wrap'>
   <common-header :backUrl="backUrl" :back="back" :title="title"></common-header>
   <ul class="nav">
-    <li class="nav-cell" @click="category = 'consignment';status = 1" :class="{on : category === 'consignment'}">待发货</li>
-    <li class="nav-cell" @click="category = 'received';status = 2" :class="{on : category === 'received'}">待收货</li>
-    <li class="nav-cell" @click="category = 'finished';status = 3" :class="{on : category === 'finished'}">已完成</li>
-    <li class="nav-cell" @click="category = 'after-sales';status = 4" :class="{on : category === 'after-sales'}">售后</li>
+    <li class="nav-cell" @click="category = 'consignment';status = 1" :class="{on : category === 'consignment'}">已付款</li>
+    <li class="nav-cell" @click="category = 'received';status = 2" :class="{on : category === 'received'}">待发货</li>
+    <li class="nav-cell" @click="category = 'finished';status = 3" :class="{on : category === 'finished'}">待收货</li>
+    <li class="nav-cell" @click="category = 'finish';status = 4" :class="{on : category === 'finish'}">已完成</li>
   </ul>
   <div class="wrapper-container" ref="container">
     <div>
@@ -15,6 +15,7 @@
       <consignment :Consignment="category" :consignmentData="consignmentData"></consignment>
       <received :Received="category" :receivedData="receivedData"></received>
       <finished :Finished="category" :finishedData="finishedData"></finished>
+      <after-sales :Finish="category" :finishData="finishData"></after-sales>
       <transition name="fade">
         <div v-if="pullingUp" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
       </transition>
@@ -29,12 +30,14 @@ import CommonHeader from'@/components/Header';
 import Consignment from'./Consignment';
 import Received from'./Received';
 import Finished from'./Finished';
+import AfterSales from'./AfterSales';
 export default {
   components:{
     CommonHeader,
     Consignment,
     Received,
     Finished,
+    AfterSales
   },
   data() {
     return {
@@ -51,6 +54,7 @@ export default {
       consignmentData:[],
       finishedData:[],
       receivedData:[],
+      finishData:[],
       pullingDown:false,
       pullingUp:false,
       goodsList:[
@@ -75,6 +79,7 @@ export default {
         this.getOrderData(1);
         this.getOrderData(2);
         this.getOrderData(3);
+        this.getOrderData(4);
       }else{
         this.getOrderData(status);
       }
@@ -162,6 +167,12 @@ export default {
           this.finishedData = [];
         }
         this.finishedData = this.finishedData.concat(orderList.list)
+        this.total = orderList.total
+      }else if(status === 4){
+        if(this.type === 'down'){
+          this.finishData = [];
+        }
+        this.finishData = this.finishData.concat(orderList.list)
         this.total = orderList.total
       }
     }

@@ -1,12 +1,12 @@
 <template>
-<div v-show="Received === 'received'">
+<div v-show="Finish === 'finish'">
   <ul class="container-box">
-    <li class="goods-container" v-for="order of receivedData" :key="order.id" @click = "$router.push('/order-detail?id=' + order.id)">
+    <li class="goods" v-for="order of finishData" :key="order.id">
       <div class="order-num">
         <span>订单编号：{{order.order_no}}</span>
-        <span>待发货</span>
+        <span>已完成</span>
       </div>
-      <div class="order-detail" v-for="item of order.goods" :key="item.goods_id">
+      <div class="order-detail" v-for="item of order.goods" :key="item.goods_id" @click = "$router.push('/order-detail?id=' + order.id)">
         <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
           <p class="goods-title">{{item.goods_name}}</p>
@@ -20,11 +20,11 @@
         <p>共计{{order.goods.length}}件<span class="total-money">￥{{order.total_price}}</span></p>
       </div>
       <div class="operation">
-        <p class="button" @click.stop="Tips">提醒发货</p>
+        <p class="button" @click.stop="afterSales(order)">申请售后</p>
       </div>
     </li>
   </ul>
-  <div class="no-goods" v-show="!receivedData.length">
+  <div class="no-goods" v-show="!finishData">
     <img src="../../assets/images/no-goods.png">
     <p>没有查询到相关订单哦！</p>
   </div>
@@ -32,11 +32,11 @@
 </template>
 
 <script>
-import {dateFormat} from '@/utils/function';
+import {dateFormat} from '@/utils/function'
 export default {
   props:{
-    Received:String,
-    receivedData:Array
+    Finish:String,
+    finishData:Array
   },
   filters:{
     dateFormat(date){
@@ -44,10 +44,12 @@ export default {
     }
   },
   methods: {
-    Tips(){
-      this.$showModel({
-        showText:'提醒发货成功',
-        showMask:false
+    afterSales(order){
+      this.$router.push({
+        path:'/after-sales-detail',
+        query:{
+          finishedData:JSON.stringify(order)
+        }
       })
     }
   },
@@ -59,10 +61,10 @@ export default {
 .container-box{
   padding:0 .2rem;
   box-sizing: border-box;
-  .goods-container{
+  .goods{
     width:100%;
     padding:.2rem;
-    margin-bottom:.2rem;
+    margin-bottom: .2rem;
     background-color: #fff;
     color:#6b6b6b;
     box-sizing: border-box;
@@ -73,8 +75,7 @@ export default {
     }
     .time{
       width:100%;
-      margin-top:.35rem;
-      line-height: .35rem;
+      margin-top:.32rem;
       @include d-flex($justify-c:space-between);
       .total-money{
         color:#ef8203;

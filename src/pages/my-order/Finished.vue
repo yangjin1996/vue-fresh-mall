@@ -1,10 +1,10 @@
 <template>
 <div v-show="Finished === 'finished'">
-  <ul class="container-box">
+  <ul class="container-box" v-show="finishedData.length > 0">
     <li class="goods-container" v-for="order of finishedData" :key="order.id" @click= "$router.push('/order-detail?id=' + order.id)">
       <div class="order-num">
         <span>订单编号：{{order.order_no}}</span>
-        <span>已完成</span>
+        <span>待收货</span>
       </div>
       <div class="order-detail" v-for="item of order.goods" :key="item.goods_id">
         <img class="goods-img" :src="item.goods_img">
@@ -20,15 +20,20 @@
         <p>共计{{order.goods.length}}件<span class="total-money">￥{{order.total_price}}</span></p>
       </div>
       <div class="operation">
-        <p class="button" @click.stop="afterSales">申请售后</p>
+        <p class="button" @click.stop="receivedGoods(order.id)">确认收货</p>
       </div>
     </li>
   </ul>
+  <div class="no-goods" v-show="!finishedData.length">
+    <img src="../../assets/images/no-goods.png">
+    <p>没有查询到相关订单哦！</p>
+  </div>
 </div>
 </template>
 
 <script>
-import {dateFormat} from '@/utils/function'
+import {dateFormat} from '@/utils/function';
+import {Token} from '@/utils/token';
 export default {
   props:{
     Finished:String,
@@ -40,12 +45,36 @@ export default {
     }
   },
   methods: {
-    afterSales(){
-      this.$router.push({
-        path:'/after-sales-detail',
-        query:{
-          finishedData:JSON.stringify(this.finishedData)
+    receivedGoods(id){
+      this.$showModel({
+        title:'是否确认收货？',
+        btn : {confirm:'确认收货',cancel:'取消'},
+        success: res => {
+          if(res.confirm){
+            this.confirmOrder(id);
+            this.deleteData(id);
+          }
         }
+      })
+    },
+    deleteData(id){
+      let idList = this.finishedData.map(res => {
+        return res.id
+      })
+      let index = idList.indexOf(id);
+      this.finishedData.splice(index,1)
+    },
+    async confirmOrder(id) {
+      const USER_TOKEN = Token.getToken()
+      this.$showLoading(true)
+      await this.axios.post('api/user/orderConfirm?type=2',{id},{
+        headers:{
+          token:USER_TOKEN
+        }
+      }).catch(err => {
+        console.log(err)
+      }).finally(() => {
+        this.$showLoading()
       })
     }
   },
@@ -141,6 +170,20 @@ export default {
         border-radius: .05rem;
       }
     }
+  }
+}
+.no-goods{
+  width:100%;
+  height:4rem;
+  @include d-flex($flex-d:column);
+  img{
+    width:2rem;
+    height:2rem;
+  }
+  p{
+    font-size:.3rem;
+    color: #999;
+    margin-top:.2rem;
   }
 }
 </style>

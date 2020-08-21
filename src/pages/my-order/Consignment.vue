@@ -4,7 +4,7 @@
     <li class="goods" v-for="order of consignmentData" :key="order.id">
       <div class="order-num">
         <span>订单编号：{{order.order_no}}</span>
-        <span>待发货</span>
+        <span>已付款</span>
       </div>
       <div class="order-detail" v-for="item of order.goods" :key="item.goods_id" @click = "$router.push('/order-detail?id=' + order.id)">
         <img class="goods-img" :src="item.goods_img">
@@ -21,6 +21,10 @@
       </div>
     </li>
   </ul>
+  <div class="no-goods" v-show="!consignmentData.length">
+    <img src="../../assets/images/no-goods.png">
+    <p>没有查询到相关订单哦！</p>
+  </div>
 </div>
 </template>
 
@@ -113,6 +117,20 @@ export default {
       }
     }
     
+  }
+}
+.no-goods{
+  width:100%;
+  height:4rem;
+  @include d-flex($flex-d:column);
+  img{
+    width:2rem;
+    height:2rem;
+  }
+  p{
+    font-size:.3rem;
+    color: #999;
+    margin-top:.2rem;
   }
 }
 </style>

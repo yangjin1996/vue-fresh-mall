@@ -1,24 +1,24 @@
 <template>
 <div class='wrap'>
   <common-header :backUrl="backUrl" :back="back" :title="title"></common-header>
-  <ul class="container-box">
+  <ul class="container-box" v-show="Object.keys(finishedData).length > 0">
     <li class="goods">
       <div class="order-num">
-        <span>订单编号：123456789</span>
+        <span>订单编号：{{finishedData.order_no}}</span>
         <span></span>
       </div>
-      <div class="order-detail">
-        <img class="goods-img" src="">
+      <div class="order-detail" v-for="item of finishedData.goods" :key="item.goods_id">
+        <img class="goods-img" :src="item.goods_img">
         <div class="goods-info">
-          <p class="goods-title">11152639874526357</p>
-          <p class="goods-market-peice">11</p>
-          <p class="goods-price">￥123</p>
+          <p class="goods-title">{{item.goods_name}}</p>
+          <p class="goods-market-peice">￥{{item.goods_price}}</p>
+          <p class="goods-price">￥{{item.goods_price}}</p>
         </div>
-        <span class="cart iconfont">X1</span>
+        <span class="cart iconfont">X{{item.count}}</span>
       </div>
       <div class="time">
-        <span>时间：2020年3月5日</span>
-        <p>共计1件<span class="total-money">￥80.00</span></p>
+        <span>时间：{{finishedData.create_time|dateFormat}}</span>
+        <p>共计{{finishedData.goods.length}}件<span class="total-money">￥{{finishedData.total_price}}</span></p>
       </div>
     </li>
   </ul>
@@ -35,7 +35,7 @@
       上传图片
     </div>
   </div>
-  <div class="submmit">
+  <div class="submmit" @click="submmit(finishedData.id)">
     提交售后
   </div>
 </div>
@@ -43,6 +43,7 @@
 
 <script>
 import CommonHeader from'@/components/Header';
+import {dateFormat} from '@/utils/function'
 export default {
   components:{
     CommonHeader
@@ -54,16 +55,30 @@ export default {
       title:'申请售后',
       textNumber:'',
       maxNumber:200,
-      finishedData:[]
+      finishedData:{}
+    }
+  },
+  filters:{
+    dateFormat(date){
+      return dateFormat('YYYY年mm月dd日',new Date(date * 1000))
     }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
       vm.backUrl = from.path
       vm.finishedData = JSON.parse(to.query.finishedData)
-      console.log(vm.finishedData)
     })
-  }
+  },
+  methods: {
+    submmit(id){
+      console.log(id)
+      this.$showModel({
+        showText:'售后申请已提交成功',
+        showMask:true
+      })
+      this.$router.replace('/my-order')
+    }
+  },
 }
 </script>
 
@@ -77,9 +92,7 @@ export default {
     box-sizing: border-box;
     .goods{
       width:100%;
-      height:3.4rem;
       padding:.2rem;
-      margin-bottom: .2rem;
       background-color: #fff;
       color:#6b6b6b;
       box-sizing: border-box;
@@ -90,6 +103,7 @@ export default {
       }
       .time{
         width:100%;
+        margin-top:.2rem;
         @include d-flex($justify-c:space-between);
         .total-money{
           color:#ef8203;
@@ -98,7 +112,7 @@ export default {
       .order-detail{
         width:100%;
         padding:0 .1rem;
-        height:1.8rem;
+        margin-top:.2rem;
         display: flex;
         box-sizing: border-box;
         position: relative;
@@ -118,7 +132,7 @@ export default {
           color:#2d2d2d;
           font-size: .28rem;
           .goods-title{
-            width:2.2rem;
+            width:3.2rem;
             overflow: hidden;
             text-overflow:ellipsis;
             white-space: nowrap;
