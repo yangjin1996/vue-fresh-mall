@@ -1,7 +1,7 @@
 <template>
 <swiper v-if="swiperList.length > 0" :options="swiperOptions" class="swiper-list">
   <swiper-slide v-for="(item,keys) of swiperList" :key="keys" class="swiper-cell">
-    <img :src="item.img" class="swiper-img">
+    <img :src="item.img" class="swiper-img" @click="toGoods(keys)">
   </swiper-slide>
   <div class="swiper-pagination" slot="pagination"></div>
 </swiper>
@@ -30,7 +30,20 @@ export default {
         autoplay:true
       },
     }
-  }
+  },
+  methods: {
+    toGoods(keys){
+      if(keys === 0){
+        this.$router.push('/category?cat_id=27')
+      }else if(keys === 1){
+        this.$router.push('/goods-detail?goods_id=82')
+      }else if(keys === 2){
+        this.$router.push('/category?cat_id=29')
+      }else if(keys === 3){
+        this.$router.push('/goods-detail?goods_id=95')
+      }
+    }
+  },
 }
 </script>
 <style lang='scss' scoped>

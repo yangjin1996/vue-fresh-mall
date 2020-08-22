@@ -29,19 +29,19 @@
       <ul class="order-status">
         <li @click="toConsignment">
           <span class="iconfont">&#xe601;</span>
-          <p>待发货</p>
+          <p>已付款</p>
         </li>
         <li @click="toReceived">
           <span class="iconfont">&#xe6b1;</span>
-          <p>待收货</p>
+          <p>待发货</p>
         </li>
         <li @click="toFinished">
           <span class="iconfont">&#xe63f;</span>
-          <p>已完成</p>
+          <p>待收货</p>
         </li>
         <li @click="toAfterSales">
           <span class="iconfont">&#xe624;</span>
-          <p>售后</p>
+          <p>已完成</p>
         </li>
       </ul>
     </div>
@@ -154,7 +154,7 @@ export default {
       this.$router.push({
         path:'/my-order',
         query:{
-          category:'after-sales'
+          category:'finish'
         }
       })
     },

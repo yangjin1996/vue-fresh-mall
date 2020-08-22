@@ -93,7 +93,7 @@ Vue.use(VueRouter)
   },
   {
     path: '/order-detail',
-    name: 'AfterSalesDetail',
+    name: 'OrderDetail',
     component: () => import('../pages/order-detail/index.vue')
   },
 ]
@@ -105,7 +105,19 @@ const router = new VueRouter({
 })
 
 //登陆验证
-const AUTH_ROUTER_NAME = ['ConfirmOrder','User']
+const AUTH_ROUTER_NAME = [
+  'ConfirmOrder',
+  'User',
+  'Message',
+  'ConfirmOrder',
+  'UserAddress',
+  'AddAddress',
+  'OrderPay',
+  'AbnormalPay',
+  'MyOrder',
+  'AfterSalesDetail',
+  'OrderDetail'
+]
 router.beforeEach((to,from,next) => {
   if(AUTH_ROUTER_NAME.includes(to.name)){
     const token = Token.getToken('token')
