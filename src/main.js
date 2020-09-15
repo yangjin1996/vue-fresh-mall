@@ -31,7 +31,7 @@ Vue.config.productionTip = false
 
 //图片懒加载
 Vue.use(VueLazyload, {
-  loading: 'images/loading-bubbles.svg',
+  loading: '',
 })
 Vue.use(Model)
 Vue.use(Loading)

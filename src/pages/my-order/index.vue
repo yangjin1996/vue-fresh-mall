@@ -58,8 +58,8 @@ export default {
       pullingDown:false,
       pullingUp:false,
       goodsList:[
-        {img:"@/assets/images/loading.gif"},
-        {img:"@/assets/images/loading.gif"},
+        {img:""},
+        {img:""},
       ],
     }
   },

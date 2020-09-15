@@ -5,7 +5,7 @@
   <div class="wrapper-container" ref="container">
     <div>
       <transition name="fade">
-        <div v-if="pullDown" class="loading">加载中 <img src="@/assets/images/loading.gif"></div>
+        <div v-if="pullDown" class="loading">加载中 <img src="../../assets/images/loading.gif"></div>
       </transition>
       <div class="nav">
         <home-swiper :swiperList="swiperList"></home-swiper>
@@ -46,8 +46,8 @@ export default {
       swiperList:[],
       navList:[],
       goodsList:[
-        {img:"@/assets/images/loading.gif"},
-        {img:"@/assets/images/loading.gif"},
+        {img:""},
+        {img:""},
       ],
       scroll:null,
       page:1,
